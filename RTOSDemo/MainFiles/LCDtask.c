@@ -287,7 +287,7 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 			myy=238;
 			myx=0;
 			//GLCD_PutPixel(319,200);
-			for(myi=0; myi <320; myi++)
+			for(myi=0; myi <320; myi++)	
 			{
 				GLCD_PutPixel(myx,myy);
 				GLCD_PutPixel(myx,myy+1);
@@ -309,7 +309,12 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 			}	 
 			GLCD_SetTextColor(Black);
 			GLCD_ClearWindow(curLine,0,5,200,Red);
-			GLCD_PutPixel(curLine, atoi((unsigned char *)lineBuffer));
+			int i;
+			for (i=0; i < sizeof(lineBuffer); i++) {
+				 GLCD_PutPixel(curLine, atoi((unsigned char *)lineBuffer[i]));
+				 curLine++;
+			}
+			
 			GLCD_SetTextColor(White);
 			GLCD_DisplayChar(0,1,1,'v');
 			GLCD_DisplayChar(9,19,1,'t');

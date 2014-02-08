@@ -123,7 +123,7 @@ const uint8_t fsmStateTempRead3 = 4;
 static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 {
 	const int buffer_size = 25;
-	unsigned char analog_buffer[buffer_size];
+	char analog_buffer[buffer_size];
 	memset(analog_buffer, 0, buffer_size);
 	unsigned char buffer_loc = 0;
 	//float temperature = 0.0;
@@ -221,7 +221,7 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			if (buffer_loc == buffer_size) {
 				buffer_loc = 0;
 				if (lcdData != NULL) {
-					if (SendLCDAnalogMsg(lcdData,strnlen(lcdBuffer,vtLCDMaxLen),lcdBuffer,portMAX_DELAY) != pdTRUE) {
+					if (SendLCDAnalogMsg(lcdData,buffer_size,analog_buffer,portMAX_DELAY) != pdTRUE) {
 						VT_HANDLE_FATAL_ERROR(0);
 					}
 				}
