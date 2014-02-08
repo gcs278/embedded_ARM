@@ -18,6 +18,8 @@ typedef struct __vtLCDStruct {
 // Structure used to define the messages that are sent to the LCD thread
 //   the maximum length of a message to be printed is the size of the "buf" field below
 #define vtLCDMaxLen 20
+#define vtLCDNumPixels 320
+#define vtLCDYAxisLen 2
 
 /* ********************************************************************* */
 // The following are the public API calls that other tasks should use to work with the LCD task
@@ -47,6 +49,15 @@ portBASE_TYPE SendLCDTimerMsg(vtLCDStruct *lcdData,portTickType ticksElapsed,por
 // Return:
 //   Result of the call to xQueueSend()
 portBASE_TYPE SendLCDPrintMsg(vtLCDStruct *lcdData,int length,char *pString,portTickType ticksToBlock);
+// Send an array of pixels to the LCD screen
+// Args:
+//   lcdData -- a pointer to a variable of type vtLCDStruct
+//   length -- number of pixels in the string -- the call will result in a fatal error if you exceed the maximum length
+//   yCoors -- The y coordinates of each pixel to send.
+//   ticksToBlock -- how long the routine should wait if the queue is full
+// Return:
+//   Result of the call to xQueueSend()
+portBASE_TYPE SendLCDAnalogMsg(vtLCDStruct *lcdData,int length,char *yCoors,portTickType ticksToBlock);
 /* ********************************************************************* */
 
 

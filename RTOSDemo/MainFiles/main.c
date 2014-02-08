@@ -149,7 +149,6 @@ tick hook). */
 /* The WEB server has a larger stack as it utilises stack hungry string
 handling library calls. */
 #define mainBASIC_WEB_STACK_SIZE            ( configMINIMAL_STACK_SIZE * 4 )
-#define USE_WEB_SERVER 1
 
 /* The message displayed by the WEB server when all tasks are executing
 without an error being reported. */
@@ -226,6 +225,7 @@ int main( void )
 	vStartLEDFlashTasks( mainFLASH_TASK_PRIORITY );
 	#endif
 
+	#define USE_WEB_SERVER 1
 	#if USE_WEB_SERVER == 1
 	// Not a standard demo -- but also not one of mine (MTJ)
 	/* Create the uIP task.  The WEB server runs in this task. */
