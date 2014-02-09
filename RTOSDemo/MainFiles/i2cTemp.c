@@ -122,7 +122,7 @@ const uint8_t fsmStateTempRead3 = 4;
 // This is the actual task that is run
 static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 {
-	const int buffer_size = 25;
+	const int buffer_size = vtLCDMaxLen;
 	char analog_buffer[buffer_size];
 	memset(analog_buffer, 0, buffer_size);
 	unsigned char buffer_loc = 0;
@@ -137,7 +137,7 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 	// Get the LCD information pointer
 	vtLCDStruct *lcdData = param->lcdData;
 	// String buffer for printing
-	char lcdBuffer[vtLCDMaxLen+1];
+	// char lcdBuffer[vtLCDMaxLen+1];
 	// Buffer for receiving messages
 	vtTempMsg msgBuffer;
 	uint8_t currentState;
