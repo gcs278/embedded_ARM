@@ -304,18 +304,22 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 			//GLCD_DisplayString(curLine,0,1,(unsigned char *)lineBuffer);
 			//GLCD_PutPixel(curLine,atoi((unsigned char *)lineBuffer));
 			//curLine++;
-			if (curLine >= 200) {
-				curLine = 10;
-			}	 
-			GLCD_SetTextColor(Black);
+				 
+			
 			
 			int i;
-		
+			
 			for (i=0; i < sizeof(lineBuffer); i++) {
-				 GLCD_ClearWindow(curLine,0,1,167,Red);
-				 GLCD_PutPixel(curLine, lrint(lineBuffer[i]));
+				 GLCD_SetTextColor(Black);
+				 GLCD_ClearWindow(curLine,0,1,198,Red);
 				 printf(" %d",lrint(lineBuffer[i]));
-				 curLine++;													   
+				 GLCD_PutPixel(curLine, lrint(lineBuffer[i]));
+				
+				 curLine++;	
+			
+				 if (curLine >= 200) {
+					curLine = 10;
+				}												   
 			}
 			
 			GLCD_SetTextColor(White);
