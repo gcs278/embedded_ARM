@@ -269,31 +269,31 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 		case LCDMsgTypePrint: {
 			//GLCD_ClearWindow(0,0,320,240,Red);
 			// setting the background color
-			GLCD_SetBackColor(Red);
-			//GLCD_ClearWindow(3,0,317,236,Black);
-			//GLCD_PutPixel(0,0);
-			GLCD_SetTextColor(White);
-			
-			//for loop for y axis
-			for(myi=0; myi <240; myi++)
-			{
-				GLCD_PutPixel(myx,myy);
-				GLCD_PutPixel(myx+1,myy);
-				myx=0;
-				myy++;	
-			}
-			//set pixels for the x axis
-			myi=0;
-			myy=238;
-			myx=0;
-			//GLCD_PutPixel(319,200);
-			for(myi=0; myi <320; myi++)	
-			{
-				GLCD_PutPixel(myx,myy);
-				GLCD_PutPixel(myx,myy+1);
-				myy=238;
-				myx++;	
-			}  			
+//			GLCD_SetBackColor(Red);
+//			//GLCD_ClearWindow(3,0,317,236,Black);
+//			//GLCD_PutPixel(0,0);
+//			GLCD_SetTextColor(White);
+//			
+//			//for loop for y axis
+//			for(myi=0; myi <240; myi++)
+//			{
+//				GLCD_PutPixel(myx,myy);
+//				GLCD_PutPixel(myx+1,myy);
+//				myx=0;
+//				myy++;	
+//			}
+//			//set pixels for the x axis
+//			myi=0;
+//			myy=238;
+//			myx=0;
+//			//GLCD_PutPixel(319,200);
+//			for(myi=0; myi <320; myi++)	
+//			{
+//				GLCD_PutPixel(myx,myy);
+//				GLCD_PutPixel(myx,myy+1);
+//				myy=238;
+//				myx++;	
+//			}  			
 			
 			// This will result in the text printing in the last five lines of the screen
 			char   lineBuffer[25];
@@ -310,9 +310,12 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 			int i;
 			
 			for (i=0; i < sizeof(lineBuffer); i++) {
+				
 				 GLCD_SetTextColor(Black);
-				 GLCD_ClearWindow(curLine,0,1,198,Red);
+				 GLCD_ClearWindow(curLine,0,1,210,Red);
+				 GLCD_WindowMax();
 				 printf(" %d",lrint(lineBuffer[i]));
+				 //printf(" %d",curLine);
 				 GLCD_PutPixel(curLine, lrint(lineBuffer[i]));
 				
 				 curLine++;	
@@ -322,9 +325,9 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 				}												   
 			}
 			
-			GLCD_SetTextColor(White);
-			GLCD_DisplayChar(0,1,1,'v');
-			GLCD_DisplayChar(9,19,1,'t');
+			// GLCD_SetTextColor(White);
+			// GLCD_DisplayChar(0,1,1,'v');
+			// GLCD_DisplayChar(9,19,1,'t');
 			break;	
 		}
 		case LCDMsgTypeTimer: {
