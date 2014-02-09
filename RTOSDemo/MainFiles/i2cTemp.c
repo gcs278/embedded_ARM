@@ -214,8 +214,8 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 				VT_HANDLE_FATAL_ERROR(0);
 			}
 
-			analog_buffer[buffer_loc] = msgBuffer.buf[0];//getValue(&msgBuffer);
-			buffer_loc++;
+		//	analog_buffer[buffer_loc] = msgBuffer.buf[0];//getValue(&msgBuffer);
+		//	buffer_loc++;
 			analog_buffer[buffer_loc] = msgBuffer.buf[1];//getValue(msgBuffer.buf[1]);
 			buffer_loc++;
 

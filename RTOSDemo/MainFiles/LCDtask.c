@@ -316,8 +316,8 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 				 GLCD_WindowMax();
 				 printf(" %d",lrint(lineBuffer[i]));
 				 //printf(" %d",curLine);
-				 //int pretty_value = 239 - (lrint(lineBuffer[i])*.85+2);
-				 int pretty_value = lineBuffer[i];
+				 int pretty_value = 239 - (lrint(lineBuffer[i])*.85+2);
+				 //int pretty_value = lineBuffer[i];
 				 GLCD_PutPixel(curLine, pretty_value);
 				
 				 curLine++;	

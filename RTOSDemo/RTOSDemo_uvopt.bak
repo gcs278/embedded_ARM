@@ -957,6 +957,32 @@
   </Group>
 
   <AlienFiles>
+    <PathWithFilename>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MAINFILES\LCDTASK.H</PathWithFilename>
+    <TopLine>52</TopLine>
+    <CurrentLine>60</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
     <PathWithFilename>C:\ARMCode\FREERTOS\SOURCE\INCLUDE\QUEUE.H</PathWithFilename>
     <TopLine>124</TopLine>
     <CurrentLine>127</CurrentLine>
@@ -984,7 +1010,7 @@
 
   <AlienFiles>
     <PathWithFilename>C:\ARMCode\RTOSDemo\MAINFILES\LCDTASK.H</PathWithFilename>
-    <TopLine>30</TopLine>
+    <TopLine>37</TopLine>
     <CurrentLine>47</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
@@ -1061,32 +1087,6 @@
   </AlienFiles>
 
   <AlienFiles>
-    <PathWithFilename>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MainFiles\LCDtask.h</PathWithFilename>
-    <TopLine>52</TopLine>
-    <CurrentLine>60</CurrentLine>
-    <Constant>0</Constant>
-    <WindowPosition>
-      <length>0</length>
-      <flags>0</flags>
-      <showCmd>0</showCmd>
-      <MinPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MinPosition>
-      <MaxPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MaxPosition>
-      <NormalPosition>
-        <Top>0</Top>
-        <Left>0</Left>
-        <Right>0</Right>
-        <Bottom>0</Bottom>
-      </NormalPosition>
-    </WindowPosition>
-  </AlienFiles>
-
-  <AlienFiles>
     <PathWithFilename>C:\ARMCode\VTCODE\VTUTILITIES.H</PathWithFilename>
     <TopLine>19</TopLine>
     <CurrentLine>19</CurrentLine>
@@ -1113,7 +1113,7 @@
   </AlienFiles>
 
   <AlienFiles>
-    <PathWithFilename>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MainFiles\i2cTemp.h</PathWithFilename>
+    <PathWithFilename>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MAINFILES\I2CTEMP.H</PathWithFilename>
     <TopLine>4</TopLine>
     <CurrentLine>14</CurrentLine>
     <Constant>0</Constant>
@@ -1143,7 +1143,7 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-      <ActiveTab>2</ActiveTab>
+      <ActiveTab>6</ActiveTab>
       <Documents>
         <Doc>
           <Name>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MAINFILES\I2CTEMP.H</Name>
@@ -1160,7 +1160,7 @@
         <Doc>
           <Name>../NXPDrivers/source/lpc17xx_ssp.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>518</TopLine>
+          <TopLine>520</TopLine>
           <CurrentLine>530</CurrentLine>
         </Doc>
         <Doc>
@@ -1184,8 +1184,8 @@
         <Doc>
           <Name>.\MainFiles/LCDtask.c</Name>
           <ColumnNumber>32</ColumnNumber>
-          <TopLine>302</TopLine>
-          <CurrentLine>314</CurrentLine>
+          <TopLine>208</TopLine>
+          <CurrentLine>208</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\MainFiles/i2cTemp.c</Name>
@@ -1226,7 +1226,7 @@
         <Doc>
           <Name>C:\ARMCode\RTOSDemo\MAINFILES\LCDTASK.H</Name>
           <ColumnNumber>18</ColumnNumber>
-          <TopLine>30</TopLine>
+          <TopLine>37</TopLine>
           <CurrentLine>47</CurrentLine>
         </Doc>
         <Doc>
