@@ -35,7 +35,7 @@
 typedef struct __vtLCDMsg {
 	uint8_t msgType;
 	uint8_t	length;	 // Length of the message to be printed
-	uint8_t buf[vtLCDMaxLen+1]; // On the way in, message to be sent, on the way out, message received (if any)
+	uint8_t buf[26]; // On the way in, message to be sent, on the way out, message received (if any)
 } vtLCDMsg;
 // end of defs
 
@@ -296,23 +296,26 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 			}  			
 			
 			// This will result in the text printing in the last five lines of the screen
-			char   lineBuffer[lcdCHAR_IN_LINE+1];
+			char   lineBuffer[25];
 			copyMsgString(lineBuffer,&msgBuffer,lcdCHAR_IN_LINE);
 			// clear the line
 			//GLCD_ClearLn(curLine,1);
 			// show the text
 			//GLCD_DisplayString(curLine,0,1,(unsigned char *)lineBuffer);
 			//GLCD_PutPixel(curLine,atoi((unsigned char *)lineBuffer));
-			curLine++;
-			if (curLine == 200) {
+			//curLine++;
+			if (curLine >= 200) {
 				curLine = 10;
 			}	 
 			GLCD_SetTextColor(Black);
-			GLCD_ClearWindow(curLine,0,5,200,Red);
+			
 			int i;
+		
 			for (i=0; i < sizeof(lineBuffer); i++) {
-				 GLCD_PutPixel(curLine, atoi((unsigned char *)lineBuffer[i]));
-				 curLine++;
+				 GLCD_ClearWindow(curLine,0,1,167,Red);
+				 GLCD_PutPixel(curLine, lrint(lineBuffer[i]));
+				 printf(" %d",lrint(lineBuffer[i]));
+				 curLine++;													   
 			}
 			
 			GLCD_SetTextColor(White);
