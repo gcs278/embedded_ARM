@@ -214,13 +214,16 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 				VT_HANDLE_FATAL_ERROR(0);
 			}
 
-		//	analog_buffer[buffer_loc] = msgBuffer.buf[0];//getValue(&msgBuffer);
-		//	buffer_loc++;
-			analog_buffer[buffer_loc] = msgBuffer.buf[1];//getValue(msgBuffer.buf[1]);
+			analog_buffer[buffer_loc] = msgBuffer.buf[0];//getValue(&msgBuffer);
 			buffer_loc++;
+			//analog_buffer[buffer_loc] = msgBuffer.buf[1];//getValue(msgBuffer.buf[1]);
+			//buffer_loc++;
 
 			// If the buffer is full, sent it to the LCD
 			if (buffer_loc == buffer_size) {
+				int i = 0;
+				//for (i; i< buffer_size; i++ )
+				//	printf(" %d ", analog_buffer[i]);
 				buffer_loc = 0;
 				if (lcdData != NULL) {
 					if (SendLCDAnalogMsg(lcdData,buffer_size,analog_buffer,portMAX_DELAY) != pdTRUE) {

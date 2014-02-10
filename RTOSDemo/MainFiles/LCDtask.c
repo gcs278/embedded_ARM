@@ -211,7 +211,7 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 	srand((unsigned) 55); // initialize the random number generator to the same seed for repeatability
 	#endif
 
-	curLine = 5;
+	curLine = 10;
 	// This task should never exit
 	for(;;)
 	{	
@@ -314,7 +314,7 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 				 GLCD_SetTextColor(Black);
 				 GLCD_ClearWindow(curLine,0,1,238,Red);
 				 GLCD_WindowMax();
-				 printf(" %d",lrint(lineBuffer[i]));
+				 //printf(" %d",lrint(lineBuffer[i]));
 				 //printf(" %d",curLine);
 				 int pretty_value = 239 - (lrint(lineBuffer[i])*.85+2);
 				 //int pretty_value = lineBuffer[i];
@@ -322,7 +322,7 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 				
 				 curLine++;	
 			
-				 if (curLine >= 200) {
+				 if (curLine == 310) {
 					curLine = 10;
 				}												   
 			}
