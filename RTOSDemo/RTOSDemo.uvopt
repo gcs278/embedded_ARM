@@ -159,7 +159,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>UL2CM3</Key>
-          <Name>-UM0314MBE -O974 -S8 -C0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO3 -TC100000000 -TP21 -TDS804F -TDT0 -TDC10 -TIE1 -TIP0 -FO23 -FD10000000 -FC800 -FN1 -FF0LPC_IAP_512 -FS00 -FL080000</Name>
+          <Name>-UM0546MBE -O974 -S8 -C0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO3 -TC100000000 -TP21 -TDS804F -TDT0 -TDC10 -TIE1 -TIP0 -FO23 -FD10000000 -FC800 -FN1 -FF0LPC_IAP_512 -FS00 -FL080000</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <MemoryWindow1>
@@ -309,10 +309,15 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>39</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+<<<<<<< HEAD
       <TopLine>393</TopLine>
       <CurrentLine>406</CurrentLine>
+=======
+      <TopLine>405</TopLine>
+      <CurrentLine>412</CurrentLine>
+>>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -323,10 +328,17 @@
       <FileType>1</FileType>
       <tvExp>1</tvExp>
       <Focus>0</Focus>
+<<<<<<< HEAD
       <ColumnNumber>73</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>245</TopLine>
       <CurrentLine>245</CurrentLine>
+=======
+      <ColumnNumber>0</ColumnNumber>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>187</TopLine>
+      <CurrentLine>187</CurrentLine>
+>>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/i2cTemp.c</PathWithFileName>
       <FilenameWithoutPath>i2cTemp.c</FilenameWithoutPath>
@@ -365,10 +377,17 @@
       <FileType>1</FileType>
       <tvExp>1</tvExp>
       <Focus>0</Focus>
+<<<<<<< HEAD
       <ColumnNumber>52</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>327</TopLine>
       <CurrentLine>338</CurrentLine>
+=======
+      <ColumnNumber>33</ColumnNumber>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <TopLine>307</TopLine>
+      <CurrentLine>318</CurrentLine>
+>>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/LCDtask.c</PathWithFileName>
       <FilenameWithoutPath>LCDtask.c</FilenameWithoutPath>
@@ -822,8 +841,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>54</TopLine>
+      <CurrentLine>61</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>../vtCode/vtLCD/vtSSP.c</PathWithFileName>
       <FilenameWithoutPath>vtSSP.c</FilenameWithoutPath>
@@ -927,7 +946,11 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
+<<<<<<< HEAD
       <TopLine>523</TopLine>
+=======
+      <TopLine>520</TopLine>
+>>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
       <CurrentLine>530</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>../NXPDrivers/source/lpc17xx_ssp.c</PathWithFileName>
@@ -1117,6 +1140,7 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
+<<<<<<< HEAD
       <ActiveTab>0</ActiveTab>
       <Documents>
         <Doc>
@@ -1148,6 +1172,21 @@
           <ColumnNumber>73</ColumnNumber>
           <TopLine>245</TopLine>
           <CurrentLine>245</CurrentLine>
+=======
+      <ActiveTab>8</ActiveTab>
+      <Documents>
+        <Doc>
+          <Name>../vtCode/vtLCD/vtSSP.c</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>54</TopLine>
+          <CurrentLine>61</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MAINFILES\I2CTEMP.H</Name>
+          <ColumnNumber>36</ColumnNumber>
+          <TopLine>4</TopLine>
+          <CurrentLine>14</CurrentLine>
+>>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
         </Doc>
         <Doc>
           <Name>C:\ARMCode\VTCODE\VTUTILITIES.H</Name>
@@ -1175,11 +1214,31 @@
         </Doc>
         <Doc>
           <Name>.\MainFiles/main.c</Name>
+<<<<<<< HEAD
           <ColumnNumber>39</ColumnNumber>
           <TopLine>394</TopLine>
           <CurrentLine>406</CurrentLine>
         </Doc>
         <Doc>
+=======
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>405</TopLine>
+          <CurrentLine>412</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\MainFiles/LCDtask.c</Name>
+          <ColumnNumber>30</ColumnNumber>
+          <TopLine>295</TopLine>
+          <CurrentLine>311</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>.\MainFiles/i2cTemp.c</Name>
+          <ColumnNumber>39</ColumnNumber>
+          <TopLine>205</TopLine>
+          <CurrentLine>217</CurrentLine>
+        </Doc>
+        <Doc>
+>>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
           <Name>../FreeRTOS/Source/queue.c</Name>
           <ColumnNumber>78</ColumnNumber>
           <TopLine>46</TopLine>
