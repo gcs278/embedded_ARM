@@ -323,10 +323,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>25</ColumnNumber>
+      <ColumnNumber>37</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>217</TopLine>
-      <CurrentLine>229</CurrentLine>
+      <TopLine>133</TopLine>
+      <CurrentLine>133</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/i2cTemp.c</PathWithFileName>
       <FilenameWithoutPath>i2cTemp.c</FilenameWithoutPath>
@@ -365,10 +365,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>7</ColumnNumber>
+      <ColumnNumber>21</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>307</TopLine>
-      <CurrentLine>317</CurrentLine>
+      <TopLine>308</TopLine>
+      <CurrentLine>325</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/LCDtask.c</PathWithFileName>
       <FilenameWithoutPath>LCDtask.c</FilenameWithoutPath>
@@ -958,8 +958,8 @@
 
   <AlienFiles>
     <PathWithFilename>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MAINFILES\LCDTASK.H</PathWithFilename>
-    <TopLine>3</TopLine>
-    <CurrentLine>20</CurrentLine>
+    <TopLine>39</TopLine>
+    <CurrentLine>39</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -1075,9 +1075,9 @@
         </Doc>
         <Doc>
           <Name>.\MainFiles/LCDtask.c</Name>
-          <ColumnNumber>9</ColumnNumber>
-          <TopLine>96</TopLine>
-          <CurrentLine>102</CurrentLine>
+          <ColumnNumber>21</ColumnNumber>
+          <TopLine>308</TopLine>
+          <CurrentLine>325</CurrentLine>
         </Doc>
         <Doc>
           <Name>../FreeRTOS/Source/list.c</Name>
@@ -1087,9 +1087,9 @@
         </Doc>
         <Doc>
           <Name>.\MainFiles/i2cTemp.c</Name>
-          <ColumnNumber>25</ColumnNumber>
-          <TopLine>217</TopLine>
-          <CurrentLine>229</CurrentLine>
+          <ColumnNumber>37</ColumnNumber>
+          <TopLine>133</TopLine>
+          <CurrentLine>133</CurrentLine>
         </Doc>
         <Doc>
           <Name>../vtCode/vtI2C/vtI2C.c</Name>
@@ -1099,9 +1099,9 @@
         </Doc>
         <Doc>
           <Name>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MAINFILES\LCDTASK.H</Name>
-          <ColumnNumber>22</ColumnNumber>
-          <TopLine>3</TopLine>
-          <CurrentLine>20</CurrentLine>
+          <ColumnNumber>25</ColumnNumber>
+          <TopLine>39</TopLine>
+          <CurrentLine>39</CurrentLine>
         </Doc>
         <Doc>
           <Name>C:\Users\ECE4534\Documents\embedded_ARM\VTCODE\VTLCD\GLCD.H</Name>
