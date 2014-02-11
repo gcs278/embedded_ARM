@@ -166,7 +166,7 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 	int xoffset = 0, yoffset = 0;
 	unsigned int myx=0, myy=0;
 	unsigned int xmin=0, xmax=0, ymin=0, ymax=0;
-	unsigned int x, y, myi;
+	unsigned int x, y, myi, mycount;
 	int i, j;
 	float hue=0, sat=0.2, light=0.2;
 	#elif LCD_EXAMPLE_OP==1
@@ -213,7 +213,6 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 	srand((unsigned) 55); // initialize the random number generator to the same seed for repeatability
 	#endif
 
-<<<<<<< HEAD
 	// setting the background color
 			GLCD_SetBackColor(Red);
 			//GLCD_ClearWindow(0,0,320,240,Black);
@@ -221,30 +220,28 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 			GLCD_SetTextColor(White);
 			
 			//for loop for y axis
-			for(myi=0; myi <240; myi++)
+			for(myi=0; myi <238; myi=myi+3)
 			{
 				GLCD_PutPixel(myx,myy);
 				//GLCD_PutPixel(myx+1,myy);
 				myx=0;
-				myy++;	
+				myy=myy+3;	
 			}
 			//set pixels for the x axis
 			myi=0;
 			myy=238;
 			myx=0;
 			//GLCD_PutPixel(319,200);
-			for(myi=0; myi <320; myi++)
+			for(myi=0; myi <=339; myi=myi+3)
 			{
 				GLCD_PutPixel(myx,myy);
 				//GLCD_PutPixel(myx,myy+1);
 				myy=238;
-				myx++;	
-			}
+				myx=myx+3;	
+			}		  
 
-	curLine = 5;
-=======
 	curLine = 10;
->>>>>>> e0d7535ad7a44e0b059d198ce60b2f40b2ac41db
+	mycount=10;
 	// This task should never exit
 	for(;;)
 	{	
@@ -312,32 +309,42 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 			//GLCD_DisplayString(curLine,0,1,(unsigned char *)lineBuffer);
 			//GLCD_PutPixel(curLine,atoi((unsigned char *)lineBuffer));
 			//curLine++;
+			if (curLine >= 310) {
+					curLine = 10;
+				}
+
 				 
 			
 			
 			int i;
-			
+			GPIO_SetValue(0,0x8000);
+			//curLine = 10;
 			for (i=0; i < sizeof(lineBuffer); i++) {
 				
 				 GLCD_SetTextColor(Black);
-				 GLCD_ClearWindow(curLine,0,1,238,Red);
+				 GLCD_ClearWindow(mycount,0,1,238,Red);
 				 GLCD_WindowMax();
 				 //printf(" %d",lrint(lineBuffer[i]));
 				 //printf(" %d",curLine);
 				 int pretty_value = 239 - (lrint(lineBuffer[i])*.85+2);
 				 //int pretty_value = lineBuffer[i];
-				 GLCD_PutPixel(curLine, pretty_value);
+				 GLCD_PutPixel(mycount, pretty_value);
 				
-				 curLine++;	
+				mycount++;	
 			
-				 if (curLine == 310) {
-					curLine = 10;
+				 if (mycount >= 310) {
+					mycount = 10;
 				}												   
 			}
+			GPIO_ClearValue(0,0x8000);
 			
 			// GLCD_SetTextColor(White);
-			// GLCD_DisplayChar(0,1,1,'v');
-			// GLCD_DisplayChar(9,19,1,'t');
+			GLCD_DisplayChar(0,1,1,'v');
+			GLCD_DisplayChar(9,19,1,'t');
+			/* if (curLine > 310) {
+					curLine = 10;
+				} */
+			//curLine = 10;
 			break;	
 		}
 		case LCDMsgTypeTimer: {
