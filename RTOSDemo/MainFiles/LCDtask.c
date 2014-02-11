@@ -220,24 +220,24 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 			GLCD_SetTextColor(White);
 			
 			//for loop for y axis
-			for(myi=0; myi <238; myi=myi+3)
+			for(myi=0; myi <238; myi=myi+4)
 			{
 				GLCD_PutPixel(myx,myy);
 				//GLCD_PutPixel(myx+1,myy);
 				myx=0;
-				myy=myy+3;	
+				myy=myy+4;	
 			}
 			//set pixels for the x axis
 			myi=0;
 			myy=238;
 			myx=0;
 			//GLCD_PutPixel(319,200);
-			for(myi=0; myi <=339; myi=myi+3)
+			for(myi=0; myi <=339; myi=myi+4)
 			{
 				GLCD_PutPixel(myx,myy);
 				//GLCD_PutPixel(myx,myy+1);
 				myy=238;
-				myx=myx+3;	
+				myx=myx+4;	
 			}		  
 
 	curLine = 10;
