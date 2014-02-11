@@ -311,13 +311,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-<<<<<<< HEAD
-      <TopLine>393</TopLine>
-      <CurrentLine>406</CurrentLine>
-=======
       <TopLine>405</TopLine>
       <CurrentLine>412</CurrentLine>
->>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -326,19 +321,12 @@
       <GroupNumber>2</GroupNumber>
       <FileNumber>7</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-      <ColumnNumber>73</ColumnNumber>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>245</TopLine>
-      <CurrentLine>245</CurrentLine>
-=======
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>187</TopLine>
       <CurrentLine>187</CurrentLine>
->>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/i2cTemp.c</PathWithFileName>
       <FilenameWithoutPath>i2cTemp.c</FilenameWithoutPath>
@@ -375,19 +363,12 @@
       <GroupNumber>2</GroupNumber>
       <FileNumber>10</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <Focus>0</Focus>
-<<<<<<< HEAD
-      <ColumnNumber>52</ColumnNumber>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>327</TopLine>
-      <CurrentLine>338</CurrentLine>
-=======
       <ColumnNumber>33</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>307</TopLine>
       <CurrentLine>318</CurrentLine>
->>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
       <bDave2>0</bDave2>
       <PathWithFileName>.\MainFiles/LCDtask.c</PathWithFileName>
       <FilenameWithoutPath>LCDtask.c</FilenameWithoutPath>
@@ -431,7 +412,7 @@
       <GroupNumber>3</GroupNumber>
       <FileNumber>13</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -445,7 +426,7 @@
       <GroupNumber>3</GroupNumber>
       <FileNumber>14</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -946,11 +927,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-<<<<<<< HEAD
-      <TopLine>523</TopLine>
-=======
       <TopLine>520</TopLine>
->>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
       <CurrentLine>530</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>../NXPDrivers/source/lpc17xx_ssp.c</PathWithFileName>
@@ -980,9 +957,87 @@
   </Group>
 
   <AlienFiles>
+    <PathWithFilename>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MAINFILES\LCDTASK.H</PathWithFilename>
+    <TopLine>52</TopLine>
+    <CurrentLine>60</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
     <PathWithFilename>C:\ARMCode\FREERTOS\SOURCE\INCLUDE\QUEUE.H</PathWithFilename>
     <TopLine>124</TopLine>
     <CurrentLine>127</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>C:\ARMCode\RTOSDemo\MAINFILES\LCDTASK.H</PathWithFilename>
+    <TopLine>37</TopLine>
+    <CurrentLine>47</CurrentLine>
+    <Constant>0</Constant>
+    <WindowPosition>
+      <length>0</length>
+      <flags>0</flags>
+      <showCmd>0</showCmd>
+      <MinPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MinPosition>
+      <MaxPosition>
+        <xPos>0</xPos>
+        <yPos>0</yPos>
+      </MaxPosition>
+      <NormalPosition>
+        <Top>0</Top>
+        <Left>0</Left>
+        <Right>0</Right>
+        <Bottom>0</Bottom>
+      </NormalPosition>
+    </WindowPosition>
+  </AlienFiles>
+
+  <AlienFiles>
+    <PathWithFilename>C:\ARMCode\VTCODE\VTLCD\GLCD.H</PathWithFilename>
+    <TopLine>7</TopLine>
+    <CurrentLine>7</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -1058,61 +1113,9 @@
   </AlienFiles>
 
   <AlienFiles>
-    <PathWithFilename>C:\ARMCode\RTOSDemo\MAINFILES\LCDTASK.H</PathWithFilename>
-    <TopLine>37</TopLine>
-    <CurrentLine>37</CurrentLine>
-    <Constant>0</Constant>
-    <WindowPosition>
-      <length>0</length>
-      <flags>0</flags>
-      <showCmd>0</showCmd>
-      <MinPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MinPosition>
-      <MaxPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MaxPosition>
-      <NormalPosition>
-        <Top>0</Top>
-        <Left>0</Left>
-        <Right>0</Right>
-        <Bottom>0</Bottom>
-      </NormalPosition>
-    </WindowPosition>
-  </AlienFiles>
-
-  <AlienFiles>
-    <PathWithFilename>C:\ARMCode\VTCODE\VTLCD\GLCD.H</PathWithFilename>
-    <TopLine>7</TopLine>
-    <CurrentLine>7</CurrentLine>
-    <Constant>0</Constant>
-    <WindowPosition>
-      <length>0</length>
-      <flags>0</flags>
-      <showCmd>0</showCmd>
-      <MinPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MinPosition>
-      <MaxPosition>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-      </MaxPosition>
-      <NormalPosition>
-        <Top>0</Top>
-        <Left>0</Left>
-        <Right>0</Right>
-        <Bottom>0</Bottom>
-      </NormalPosition>
-    </WindowPosition>
-  </AlienFiles>
-
-  <AlienFiles>
-    <PathWithFilename>C:\ARMCode\RTOSDemo\MAINFILES\I2CTEMP.H</PathWithFilename>
-    <TopLine>16</TopLine>
-    <CurrentLine>16</CurrentLine>
+    <PathWithFilename>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MAINFILES\I2CTEMP.H</PathWithFilename>
+    <TopLine>4</TopLine>
+    <CurrentLine>14</CurrentLine>
     <Constant>0</Constant>
     <WindowPosition>
       <length>0</length>
@@ -1140,39 +1143,6 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-<<<<<<< HEAD
-      <ActiveTab>0</ActiveTab>
-      <Documents>
-        <Doc>
-          <Name>.\MainFiles/LCDtask.c</Name>
-          <ColumnNumber>12</ColumnNumber>
-          <TopLine>158</TopLine>
-          <CurrentLine>162</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>C:\ARMCode\RTOSDemo\MAINFILES\I2CTEMP.H</Name>
-          <ColumnNumber>7</ColumnNumber>
-          <TopLine>16</TopLine>
-          <CurrentLine>16</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>C:\ARMCode\VTCODE\VTLCD\GLCD.H</Name>
-          <ColumnNumber>28</ColumnNumber>
-          <TopLine>7</TopLine>
-          <CurrentLine>7</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>C:\ARMCode\RTOSDemo\MAINFILES\LCDTASK.H</Name>
-          <ColumnNumber>19</ColumnNumber>
-          <TopLine>37</TopLine>
-          <CurrentLine>37</CurrentLine>
-        </Doc>
-        <Doc>
-          <Name>.\MainFiles/i2cTemp.c</Name>
-          <ColumnNumber>73</ColumnNumber>
-          <TopLine>245</TopLine>
-          <CurrentLine>245</CurrentLine>
-=======
       <ActiveTab>8</ActiveTab>
       <Documents>
         <Doc>
@@ -1186,7 +1156,6 @@
           <ColumnNumber>36</ColumnNumber>
           <TopLine>4</TopLine>
           <CurrentLine>14</CurrentLine>
->>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
         </Doc>
         <Doc>
           <Name>C:\ARMCode\VTCODE\VTUTILITIES.H</Name>
@@ -1197,7 +1166,7 @@
         <Doc>
           <Name>../NXPDrivers/source/lpc17xx_ssp.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>523</TopLine>
+          <TopLine>520</TopLine>
           <CurrentLine>530</CurrentLine>
         </Doc>
         <Doc>
@@ -1214,13 +1183,6 @@
         </Doc>
         <Doc>
           <Name>.\MainFiles/main.c</Name>
-<<<<<<< HEAD
-          <ColumnNumber>39</ColumnNumber>
-          <TopLine>394</TopLine>
-          <CurrentLine>406</CurrentLine>
-        </Doc>
-        <Doc>
-=======
           <ColumnNumber>0</ColumnNumber>
           <TopLine>405</TopLine>
           <CurrentLine>412</CurrentLine>
@@ -1238,7 +1200,6 @@
           <CurrentLine>217</CurrentLine>
         </Doc>
         <Doc>
->>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
           <Name>../FreeRTOS/Source/queue.c</Name>
           <ColumnNumber>78</ColumnNumber>
           <TopLine>46</TopLine>
@@ -1263,6 +1224,18 @@
           <CurrentLine>126</CurrentLine>
         </Doc>
         <Doc>
+          <Name>C:\ARMCode\VTCODE\VTLCD\GLCD.H</Name>
+          <ColumnNumber>28</ColumnNumber>
+          <TopLine>7</TopLine>
+          <CurrentLine>7</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>C:\ARMCode\RTOSDemo\MAINFILES\LCDTASK.H</Name>
+          <ColumnNumber>18</ColumnNumber>
+          <TopLine>37</TopLine>
+          <CurrentLine>47</CurrentLine>
+        </Doc>
+        <Doc>
           <Name>C:\ARMCode\FREERTOS\SOURCE\INCLUDE\QUEUE.H</Name>
           <ColumnNumber>104</ColumnNumber>
           <TopLine>124</TopLine>
@@ -1273,6 +1246,12 @@
           <ColumnNumber>88</ColumnNumber>
           <TopLine>155</TopLine>
           <CurrentLine>155</CurrentLine>
+        </Doc>
+        <Doc>
+          <Name>C:\Users\ECE4534\Documents\embedded_ARM\RTOSDemo\MAINFILES\LCDTASK.H</Name>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>52</TopLine>
+          <CurrentLine>60</CurrentLine>
         </Doc>
       </Documents>
     </MDIGroup>

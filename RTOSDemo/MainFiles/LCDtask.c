@@ -31,8 +31,6 @@
 #define LCDMsgTypeTimer 1
 // a message to be printed
 #define LCDMsgTypePrint 2
-// set the GPIO pin 15
-
 // actual data structure that is sent in a message
 typedef struct __vtLCDMsg {
 	uint8_t msgType;
@@ -159,8 +157,9 @@ static unsigned short hsl2rgb(float H,float S,float L);
 static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 {
 	#if LCD_EXAMPLE_OP==0
-	GPIO_SetDir(0,0x78000,1);
 	unsigned short screenColor = 0;
+	GPIO_SetDir(0,0x78000,1);
+	GPIO_ClearValue(0,0x8000);
 	unsigned short tscr;
 	unsigned char curLine;
 	unsigned timerCount = 0;
@@ -214,11 +213,9 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 	srand((unsigned) 55); // initialize the random number generator to the same seed for repeatability
 	#endif
 
-	curLine = 5;
-			   	//GLCD_ClearWindow(0,0,320,240,Red);
-			// setting the background color
+	// setting the background color
 			GLCD_SetBackColor(Red);
-			//GLCD_ClearWindow(3,0,317,236,Black);
+			//GLCD_ClearWindow(0,0,320,240,Black);
 			//GLCD_PutPixel(0,0);
 			GLCD_SetTextColor(White);
 			
@@ -235,18 +232,18 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 			myy=238;
 			myx=0;
 			//GLCD_PutPixel(319,200);
-			for(myi=0; myi <320; myi++)	
+			for(myi=0; myi <320; myi++)
 			{
 				GLCD_PutPixel(myx,myy);
 				//GLCD_PutPixel(myx,myy+1);
 				myy=238;
 				myx++;	
 			}
-			
+
+	curLine = 5;
 	// This task should never exit
 	for(;;)
-	{
-		
+	{	
 		#ifdef INSPECT_STACK   
 		CurrentStackLeft = uxTaskGetStackHighWaterMark(NULL);
 		float remainingStack = CurrentStackLeft;
@@ -267,20 +264,9 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 		vtITMu8(vtITMPortLCDMsg,getMsgType(&msgBuffer));
 		vtITMu8(vtITMPortLCDMsg,getMsgLength(&msgBuffer));
 		  
-		// setting the background color
-	/*	for (myx=0; myx<320;myx++){
-		GLCD_PutPixel(myx,238);
-		GLCD_PutPixel(myx,239);
-		for(myy=0;myy<240;myy++){
-			GLCD_PutPixel(0,myy);
-			GLCD_PutPixel(1,myy);
-		}
-		myy=0;
-	}
-	
-			GLCD_DisplayChar(0,1,1,'v');
-			GLCD_DisplayChar(9,19,1,'t');	*/
-			 		
+		  
+			//GLCD_DisplayChar(0,1,1,'v');
+			//GLCD_DisplayChar(9,19,1,'t'); 		
 
 		// Take a different action depending on the type of the message that we received
 		switch(getMsgType(&msgBuffer)) {
@@ -326,24 +312,18 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 			
 			
 			int i;
-			//GPIO_ClearValue(0,0x78000);
+			
 			for (i=0; i < sizeof(lineBuffer); i++) {
 				
-				 GPIO_ClearValue(0,0x10000);
 				 GLCD_SetTextColor(Black);
 				 GLCD_ClearWindow(curLine,0,1,238,Red);
 				 GLCD_WindowMax();
 				 printf(" %d",lrint(lineBuffer[i]));
 				 //printf(" %d",curLine);
-<<<<<<< HEAD
-				 GLCD_PutPixel(curLine, lrint(lineBuffer[i]));
-				 GPIO_SetValue(0,0x10000);
-=======
 				 int pretty_value = 239 - (lrint(lineBuffer[i])*.85+2);
 				 //int pretty_value = lineBuffer[i];
 				 GLCD_PutPixel(curLine, pretty_value);
 				
->>>>>>> 53c9a03221860811a1e67990b4e02f2510d5cc0d
 				 curLine++;	
 			
 				 if (curLine >= 200) {
@@ -351,41 +331,12 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 				}												   
 			}
 			
-			 GLCD_SetTextColor(White);
-			 GPIO_ClearValue(0,0x8000);
-			 GLCD_DisplayChar(0,1,1,'v');
-			 GLCD_DisplayChar(9,19,1,'t');
-			 GPIO_ClearValue(0,0x8000);
+			// GLCD_SetTextColor(White);
+			// GLCD_DisplayChar(0,1,1,'v');
+			// GLCD_DisplayChar(9,19,1,'t');
 			break;	
 		}
 		case LCDMsgTypeTimer: {
-			 		//GLCD_ClearWindow(0,0,320,240,Red);
-			// setting the background color
-		/*	GLCD_SetBackColor(Red);
-			//GLCD_ClearWindow(3,0,317,236,Black);
-			//GLCD_PutPixel(0,0);
-			GLCD_SetTextColor(White);
-			
-			//for loop for y axis
-			for(myi=0; myi <240; myi++)
-			{
-				GLCD_PutPixel(myx,myy);
-				//GLCD_PutPixel(myx+1,myy);
-				myx=0;
-				myy++;	
-			}
-			//set pixels for the x axis
-			myi=0;
-			myy=238;
-			myx=0;
-			//GLCD_PutPixel(319,200);
-			for(myi=0; myi <320; myi++)	
-			{
-				GLCD_PutPixel(myx,myy);
-				//GLCD_PutPixel(myx,myy+1);
-				myy=238;
-				myx++;	
-			}*/
 			// Note: if I cared how long the timer update was I would call my routine
 			//    unpackTimerMsg() which would unpack the message and get that value
 			// Each timer update will cause a circle to be drawn on the top half of the screen
