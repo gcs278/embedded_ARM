@@ -60,9 +60,10 @@ HTTPD_CGI_CALL(net, "net-stats", net_stats);
 HTTPD_CGI_CALL(rtos, "rtos-stats", rtos_stats );
 HTTPD_CGI_CALL(run, "run-time", run_time );
 HTTPD_CGI_CALL(io, "led-io", led_io );
+HTTPD_CGI_CALL(test, "test", test_out );
 
 
-static const struct httpd_cgi_call *calls[] = { &file, &tcp, &net, &rtos, &run, &io, NULL };
+static const struct httpd_cgi_call *calls[] = { &file, &tcp, &net, &rtos, &run, &io, &test, NULL };
 
 /*---------------------------------------------------------------------------*/
 static
@@ -104,6 +105,26 @@ PT_THREAD(file_stats(struct httpd_state *s, char *ptr))
   PSOCK_END(&s->sout);
 }
 /*---------------------------------------------------------------------------*/
+static unsigned short
+generate_test_out(void *arg)
+{
+	// Outputs two buttons, start and stop
+	char data[300] = "<button type=\"submit\" name=\"run\" value=\"1\">START</button>";
+	strcat(data, "<button type=\"submit\" name=\"run\" value=\"0\">STOP</button>");
+  	sprintf(uip_appdata,data);
+
+  return strlen(uip_appdata);
+}
+static
+PT_THREAD(test_out(struct httpd_state *s, char *ptr))
+{
+  PSOCK_BEGIN(&s->sout);
+
+  PSOCK_GENERATOR_SEND(&s->sout, generate_test_out, strchr(ptr, ' ') + 1);
+
+  PSOCK_END(&s->sout);
+}
+
 static const char closed[] =   /*  "CLOSED",*/
 {0x43, 0x4c, 0x4f, 0x53, 0x45, 0x44, 0};
 static const char syn_rcvd[] = /*  "SYN-RCVD",*/
@@ -187,7 +208,7 @@ generate_net_stats(void *arg)
   return snprintf((char *)uip_appdata, UIP_APPDATA_SIZE,
 		  "%5u\n", ((uip_stats_t *)&uip_stat)[s->count]);
 }
-
+				
 static
 PT_THREAD(net_stats(struct httpd_state *s, char *ptr))
 {

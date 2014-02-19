@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>FreeRTOS.org uIP WEB server demo</title>
+  </head>
+  <BODY>
+<font face="arial">
+<a href="index.shtml">Task Stats</a> <b>|</b> <a href="runtime.shtml">TEST</a> <b>|</b> <a href="stats.shtml">TCP Stats</a> <b>|</b> <a href="tcp.shtml">Connections</a> <b>|</b> <a href="http://www.freertos.org/">FreeRTOS.org Homepage</a> <b>|</b> <a href="io.shtml">IO</a>
+<br><p>
+<hr>
+<b>TEST</b><br>
+
+<p>
+
+TEST IS A TEST YO
+
+
+<p>
+<form name="aForm" action="/test.shtml" method="get">
+%! test
+<p>
+<input type="submit" value="TEST">
+</form>
+<br><p>
+</font>
+</body>
+</html>
+

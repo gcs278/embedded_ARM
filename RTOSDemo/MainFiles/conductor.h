@@ -20,4 +20,7 @@ typedef struct __ConductorStruct {
 //   i2c: pointer to the data structure for an i2c task
 //   temperature: pointer to the data structure for an LCD task (may be NULL)
 void vStartConductorTask(vtConductorStruct *conductorData,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature);
+
+//portBASE_TYPE sendConductorMessage(g9Msg* msg,portTickType ticksToBlock);
+
 #endif

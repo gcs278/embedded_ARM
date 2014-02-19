@@ -266,7 +266,7 @@ int main( void )
 	initUSB();  // MTJ: This is my routine used to make sure we can do printf() with USB
     xTaskCreate( vUSBTask, ( signed char * ) "USB", configMINIMAL_STACK_SIZE, ( void * ) NULL, mainUSB_TASK_PRIORITY, NULL );
 	#endif
-	
+
 	/* Start the scheduler. */
 	// IMPORTANT: Once you start the scheduler, any variables on the stack from main (local variables in main) can be (will be...) written over
 	//            because the stack is used by the interrupt handler

@@ -248,6 +248,8 @@ struct uip_eth_addr xAddr;
 
 void vApplicationProcessFormInput( char *pcInputString )
 {
+
+
 char *c;
 extern void vParTestSetLEDState( long lState );
 
@@ -257,8 +259,13 @@ extern void vParTestSetLEDState( long lState );
     if( c )
     {
 		/* Turn the FIO1 LED's on or off in accordance with the check box status. */
-		if( strstr( c, "LED0=1" ) != NULL )
+		if( strstr( c, "run=1" ) != NULL )
 		{
+			moveForward("GO");
+			vParTestSetLEDState( pdTRUE );
+		}
+		else if ( strstr ( c, "run=0" ) != NULL ) {
+			moveStop("STOP");
 			vParTestSetLEDState( pdTRUE );
 		}
 		else

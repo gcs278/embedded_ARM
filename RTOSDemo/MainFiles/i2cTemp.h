@@ -40,4 +40,8 @@ portBASE_TYPE SendTempTimerMsg(vtTempStruct *tempData,portTickType ticksElapsed,
 // Return:
 //   Result of the call to xQueueSend()
 portBASE_TYPE SendTempValueMsg(vtTempStruct *tempData,uint8_t msgType,uint8_t value,portTickType ticksToBlock);
+
+void moveForward(char* msg);
+void moveStop(char* msg);
+
 #endif

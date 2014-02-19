@@ -12,5 +12,9 @@
 #define vtI2CMsgTypeTempRead2 3
 #define vtI2CMsgTypeTempRead3 4
 // below is not actually an i2c message, but the value is reserved
-#define TempMsgTypeTimer 5 
+#define TempMsgTypeTimer 5
+
+// Rover message types
+#define roverI2CMsgTypeFullData 6
+ 
 #endif

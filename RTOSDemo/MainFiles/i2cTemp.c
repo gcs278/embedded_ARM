@@ -42,6 +42,10 @@ typedef struct __vtTempMsg {
 /* The i2cTemp task. */
 static portTASK_FUNCTION_PROTO( vi2cTempUpdateTask, pvParameters );
 
+int moveForwardFlag = 0;
+int moveStopFlag = 0;
+char message[30];
+
 /*-----------------------------------------------------------*/
 // Public API
 void vStarti2cTempTask(vtTempStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtLCDStruct *lcd)
@@ -104,13 +108,24 @@ uint8_t getValue(vtTempMsg *Buffer)
 	return(*ptr);
 }
 
-// I2C commands for the temperature sensor
+// I2C commands for commanding the Rover
 	const uint8_t i2cCmdInit[]= {0xAC,0x00};
+
+	// DEBUGING MOVING
+	const uint8_t i2cRoverMoveForward[] = {0x01};
+	const uint8_t i2cRoverMoveRight[] = {0x02};
+	const uint8_t i2cRoverMoveLeft[] = {0x03};
+	const uint8_t i2cRoverMoveBack[] = {0x04};
+	const uint8_t i2cRoverMoveStop[] = {0x05};
+
+	// REQUESTING DATA
+	const uint8_t i2cRoverRequestData[] = {0x07};
+
+
 	const uint8_t i2cCmdStartConvert[]= {0xEE};
 	const uint8_t i2cCmdStopConvert[]= {0x22};
 	const uint8_t i2cCmdReadVals[]= {0xAA};
-	const uint8_t i2cCmdReadCnt[]= {0xA8};
-	const uint8_t i2cCmdReadSlope[]= {0xA9};
+
 // end of I2C command definitions
 
 // Definitions of the states for the FSM below
@@ -128,7 +143,6 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 	unsigned char buffer_loc = 0;
 	//float temperature = 0.0;
 	//float countPerC = 100.0, countRemain=0.0;
-	
 															
 	// Get the parameters
 	vtTempStruct *param = (vtTempStruct *) pvParameters;
@@ -155,6 +169,39 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 	// Like all good tasks, this should never exit
 	for(;;)
 	{
+		if ( moveForwardFlag ) {
+			// NOTE: THAT 2 DETERMINES RX LENGTH!!
+			// Tell rover to move forward
+			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,2) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+
+			// Request data from the rover
+		//	if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x4F,sizeof(i2cRoverRequestData),i2cRoverRequestData,20) != pdTRUE) {
+		//		VT_HANDLE_FATAL_ERROR(0);
+		//	}
+
+			// Print something on LCD
+			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+			moveForwardFlag = 0;
+		}
+		if ( moveStopFlag ) {
+			// NOTE: THAT 2 DETERMINES RX LENGTH!!
+			// Tell rover to move forward
+			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveStop),i2cRoverMoveStop,2) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+
+			// Print something on LCD
+			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+			moveStopFlag = 0;
+		}
+
+
 		// Wait for a message from either a timer or from an I2C operation
 		if (xQueueReceive(param->inQ,(void *) &msgBuffer,portMAX_DELAY) != pdTRUE) {
 			VT_HANDLE_FATAL_ERROR(0);
@@ -186,9 +233,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 				// We have three transactions on i2c to read the full temperature 
 				//   we send all three requests to the I2C thread (via a Queue) -- responses come back through the conductor thread
 				// Temperature read -- use a convenient routine defined above
-				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cCmdReadVals),i2cCmdReadVals,2) != pdTRUE) {
-					VT_HANDLE_FATAL_ERROR(0);
-				}
+//				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cCmdReadVals),i2cCmdReadVals,2) != pdTRUE) {
+//					VT_HANDLE_FATAL_ERROR(0);
+//				}
 				/*
 				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cCmdReadVals),i2cCmdReadVals,2) != pdTRUE) {
 					VT_HANDLE_FATAL_ERROR(0);
@@ -221,17 +268,26 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 
 			// If the buffer is full, sent it to the LCD
 			if (buffer_loc == buffer_size) {
-				int i = 0;
-				//for (i; i< buffer_size; i++ )
-				//	printf(" %d ", analog_buffer[i]);
 				buffer_loc = 0;
 				if (lcdData != NULL) {
-					if (SendLCDAnalogMsg(lcdData,buffer_size,analog_buffer,portMAX_DELAY) != pdTRUE) {
-						VT_HANDLE_FATAL_ERROR(0);
-					}
+					//if (SendLCDAnalogMsg(lcdData,buffer_size,analog_buffer,portMAX_DELAY) != pdTRUE) {
+					//	VT_HANDLE_FATAL_ERROR(0);
+					//}
 				}
 			}
 			break;
+		}
+		case roverI2CMsgTypeFullData: {
+			// Do something with the data from sensors
+
+			// MAY NOT BE BUFFER SIZE (That's size of our display buffer)
+			int i=0;
+			for (i; i<buffer_size; i++) {
+				// Get all the bytes
+				analog_buffer[i] = msgBuffer.buf[i];
+			}
+
+			// Display or something
 		}
 		/*
 		case vtI2CMsgTypeTempRead1: {
@@ -294,3 +350,13 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 	}
 }
 
+void moveForward(char* msg) {
+   
+	strcpy(message, msg);
+	moveForwardFlag = 1;
+}
+
+void moveStop(char* msg) {
+	strcpy(message, msg);
+	moveStopFlag = 1;
+}
