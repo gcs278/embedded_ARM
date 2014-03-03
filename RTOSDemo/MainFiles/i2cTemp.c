@@ -44,7 +44,10 @@ static portTASK_FUNCTION_PROTO( vi2cTempUpdateTask, pvParameters );
 
 int moveForwardFlag = 0;
 int moveStopFlag = 0;
+int moveRightFlag = 0;
+int moveLeftFlag = 0;
 char message[30];
+int count = 0;
 
 /*-----------------------------------------------------------*/
 // Public API
@@ -112,11 +115,11 @@ uint8_t getValue(vtTempMsg *Buffer)
 	const uint8_t i2cCmdInit[]= {0xAC,0x00};
 
 	// DEBUGING MOVING
-	const uint8_t i2cRoverMoveForward[] = {0x01};
-	const uint8_t i2cRoverMoveRight[] = {0x02};
-	const uint8_t i2cRoverMoveLeft[] = {0x03};
-	const uint8_t i2cRoverMoveBack[] = {0x04};
-	const uint8_t i2cRoverMoveStop[] = {0x05};
+	uint8_t i2cRoverMoveForward[] = {0x01, 0x00};
+	uint8_t i2cRoverMoveRight[] = {0x02, 0x00};
+	uint8_t i2cRoverMoveLeft[] = {0x03, 0x00};
+	uint8_t i2cRoverMoveBack[] = {0x04, 0x00};
+	uint8_t i2cRoverMoveStop[] = {0x05, 0x00};
 
 	// REQUESTING DATA
 	const uint8_t i2cRoverRequestData[] = {0x07};
@@ -170,9 +173,11 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 	for(;;)
 	{
 		if ( moveForwardFlag ) {
+			count += 1;
+			i2cRoverMoveForward[1] = count;
 			// NOTE: THAT 2 DETERMINES RX LENGTH!!
 			// Tell rover to move forward
-			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,2) != pdTRUE) {
+			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
 			}
 
@@ -188,9 +193,12 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			moveForwardFlag = 0;
 		}
 		if ( moveStopFlag ) {
+			count += 1;
+
+			i2cRoverMoveStop[1] = count;
 			// NOTE: THAT 2 DETERMINES RX LENGTH!!
 			// Tell rover to move forward
-			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveStop),i2cRoverMoveStop,2) != pdTRUE) {
+			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveStop),i2cRoverMoveStop,10) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
 			}
 
@@ -201,6 +209,39 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			moveStopFlag = 0;
 		}
 
+		if ( moveLeftFlag ) {
+			count += 1;
+
+			i2cRoverMoveLeft[1] = count;
+			// NOTE: THAT 2 DETERMINES RX LENGTH!!
+			// Tell rover to move forward
+			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveLeft),i2cRoverMoveLeft,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+
+			// Print something on LCD
+			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+			moveLeftFlag = 0;
+		}
+
+		if ( moveRightFlag ) {
+			count += 1;
+
+			i2cRoverMoveRight[1] = count;
+			// NOTE: THAT 2 DETERMINES RX LENGTH!!
+			// Tell rover to move forward
+			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveRight),i2cRoverMoveRight,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+
+			// Print something on LCD
+			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+			moveRightFlag = 0;
+		}
 
 		// Wait for a message from either a timer or from an I2C operation
 		if (xQueueReceive(param->inQ,(void *) &msgBuffer,portMAX_DELAY) != pdTRUE) {
@@ -260,21 +301,22 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			if (currentState != fsmStateTempRead1) {
 				VT_HANDLE_FATAL_ERROR(0);
 			}
+			
+			//analog_buffer[buffer_loc] = msgBuffer.buf[0];//getValue(&msgBuffer);
 
-			analog_buffer[buffer_loc] = msgBuffer.buf[0];//getValue(&msgBuffer);
-			buffer_loc++;
+			char str[20];
+			sprintf(str,"%d,%d,%d,%d,%d", msgBuffer.buf[0], msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],
+			msgBuffer.buf[4]);//,msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9],msgBuffer.buf[10]);
+			//buffer_loc++;
+
 			//analog_buffer[buffer_loc] = msgBuffer.buf[1];//getValue(msgBuffer.buf[1]);
 			//buffer_loc++;
 
-			// If the buffer is full, sent it to the LCD
-			if (buffer_loc == buffer_size) {
-				buffer_loc = 0;
-				if (lcdData != NULL) {
-					//if (SendLCDAnalogMsg(lcdData,buffer_size,analog_buffer,portMAX_DELAY) != pdTRUE) {
-					//	VT_HANDLE_FATAL_ERROR(0);
-					//}
-				}
+		    // Print something on LCD
+			if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
 			}
+
 			break;
 		}
 		case roverI2CMsgTypeFullData: {
@@ -359,4 +401,14 @@ void moveForward(char* msg) {
 void moveStop(char* msg) {
 	strcpy(message, msg);
 	moveStopFlag = 1;
+}
+
+void moveRight(char* msg) {
+	strcpy(message, msg);
+	moveRightFlag = 1;
+}
+
+void moveLeft(char* msg) {
+	strcpy(message, msg);
+	moveLeftFlag = 1;
 }

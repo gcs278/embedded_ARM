@@ -43,5 +43,7 @@ portBASE_TYPE SendTempValueMsg(vtTempStruct *tempData,uint8_t msgType,uint8_t va
 
 void moveForward(char* msg);
 void moveStop(char* msg);
+void moveLeft(char* msg);
+void moveRight(char* msg);
 
 #endif

@@ -5,15 +5,14 @@
   </head>
   <BODY>
 <font face="arial">
-<a href="index.shtml">Task Stats</a> <b>|</b> <a href="runtime.shtml">TEST</a> <b>|</b> <a href="stats.shtml">TCP Stats</a> <b>|</b> <a href="tcp.shtml">Connections</a> <b>|</b> <a href="http://www.freertos.org/">FreeRTOS.org Homepage</a> <b>|</b> <a href="io.shtml">IO</a>
+<a href="index.shtml">Task Stats</a> <b>|</b> <a href="runtime.shtml">Run Time Stats</a> <b>|</b> <a href="stats.shtml">TCP Stats</a> <b>|</b> <a href="tcp.shtml">Connections</a> <b>|</b> <a href="http://www.freertos.org/">FreeRTOS.org Homepage</a> <b>|</b> <a href="io.shtml">IO</a><b>|</b><a href="test.shtml">CONTROLS</a>o
 <br><p>
 <hr>
-<b>TEST</b><br>
+<b>TEAM 1 Commander</b><br>
 
 <p>
 
-TEST IS A TEST YO
-
+DEBUGGING CONTROLLER
 
 <p>
 <form name="aForm" action="/test.shtml" method="get">

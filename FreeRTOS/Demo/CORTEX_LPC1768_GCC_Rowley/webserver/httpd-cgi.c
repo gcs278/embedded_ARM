@@ -111,6 +111,8 @@ generate_test_out(void *arg)
 	// Outputs two buttons, start and stop
 	char data[300] = "<button type=\"submit\" name=\"run\" value=\"1\">START</button>";
 	strcat(data, "<button type=\"submit\" name=\"run\" value=\"0\">STOP</button>");
+	strcat(data, "<button type=\"submit\" name=\"run\" value=\"2\">LEFT</button>");
+	strcat(data, "<button type=\"submit\" name=\"run\" value=\"3\">RIGHT</button>");
   	sprintf(uip_appdata,data);
 
   return strlen(uip_appdata);
