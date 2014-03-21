@@ -45,5 +45,8 @@ void moveForward(char* msg);
 void moveStop(char* msg);
 void moveLeft(char* msg);
 void moveRight(char* msg);
+void moveUse(char* msg);
+void moveMap(char* msg);
+void moveStart(char* msg);
 
 #endif

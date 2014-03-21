@@ -15,6 +15,8 @@
 #include "LCDtask.h"
 #include "i2cTemp.h"
 #include "I2CTaskMsgTypes.h"
+// this is a test
+#include "mywebmap.h"
 
 /* *********************************************** */
 // definitions and data structures that are private to this file
@@ -46,6 +48,9 @@ int moveForwardFlag = 0;
 int moveStopFlag = 0;
 int moveRightFlag = 0;
 int moveLeftFlag = 0;
+int moveUseFlag = 0;
+int moveMapFlag = 0;
+int moveStartFlag = 0;
 char message[30];
 int count = 0;
 
@@ -174,6 +179,7 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 	{
 		if ( moveForwardFlag ) {
 			count += 1;
+			
 			i2cRoverMoveForward[1] = count;
 			// NOTE: THAT 2 DETERMINES RX LENGTH!!
 			// Tell rover to move forward
@@ -241,6 +247,54 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 				VT_HANDLE_FATAL_ERROR(0);
 			}
 			moveRightFlag = 0;
+		}
+		if ( moveUseFlag ) {
+			count += 1;
+
+			//i2cRoverMoveRight[1] = count;
+			// NOTE: THAT 2 DETERMINES RX LENGTH!!
+			// Tell rover to move forward
+			//if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveRight),i2cRoverMoveRight,10) != pdTRUE) {
+			//	VT_HANDLE_FATAL_ERROR(0);
+			//}
+
+			// Print something on LCD
+			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+			moveUseFlag = 0;
+		}
+		if ( moveStartFlag ) {
+			count += 1;
+
+			//i2cRoverMoveRight[1] = count;
+			// NOTE: THAT 2 DETERMINES RX LENGTH!!
+			// Tell rover to move forward
+			//if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveRight),i2cRoverMoveRight,10) != pdTRUE) {
+			//	VT_HANDLE_FATAL_ERROR(0);
+			//}
+
+			// Print something on LCD
+			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+			moveStartFlag = 0;
+		}
+		if ( moveMapFlag ) {
+			count += 1;
+
+			//i2cRoverMoveRight[1] = count;
+			// NOTE: THAT 2 DETERMINES RX LENGTH!!
+			// Tell rover to move forward
+			//if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveRight),i2cRoverMoveRight,10) != pdTRUE) {
+			//	VT_HANDLE_FATAL_ERROR(0);
+			//}
+
+			// Print something on LCD
+			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+			moveMapFlag = 0;
 		}
 
 		// Wait for a message from either a timer or from an I2C operation
@@ -396,19 +450,40 @@ void moveForward(char* msg) {
    
 	strcpy(message, msg);
 	moveForwardFlag = 1;
+	mapStruct.testVar = 0;
+	
 }
 
 void moveStop(char* msg) {
 	strcpy(message, msg);
 	moveStopFlag = 1;
+	mapStruct.testVar = 1;
 }
 
 void moveRight(char* msg) {
 	strcpy(message, msg);
 	moveRightFlag = 1;
+	mapStruct.testVar = 0;
+	
 }
 
 void moveLeft(char* msg) {
 	strcpy(message, msg);
 	moveLeftFlag = 1;
+	mapStruct.testVar = 0;
+}
+void moveStart(char* msg) {
+	strcpy(message, msg);
+	moveStartFlag = 1;
+	mapStruct.testVar = 0;
+}
+void moveMap(char* msg) {
+	strcpy(message, msg);
+	moveMapFlag = 1;
+	mapStruct.testVar = 0;
+}
+void moveUse(char* msg) {
+	strcpy(message, msg);
+	moveUseFlag = 1;
+	mapStruct.testVar = 0;
 }

@@ -276,6 +276,18 @@ extern void vParTestSetLEDState( long lState );
 			moveRight("RIGHT");
 			vParTestSetLEDState( pdTRUE );
 		}
+		else if ( strstr ( c, "run=5" ) != NULL ) {
+			moveMap("MAP");
+			vParTestSetLEDState( pdTRUE );
+		}
+		else if ( strstr ( c, "run=4" ) != NULL ) {
+			moveStart("START");
+			vParTestSetLEDState( pdTRUE );
+		}
+		else if ( strstr ( c, "run=6" ) != NULL ) {
+			moveUse("USE");
+			vParTestSetLEDState( pdTRUE );
+		}
 		else
 		{
 			vParTestSetLEDState( pdFALSE );

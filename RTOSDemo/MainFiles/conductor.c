@@ -15,6 +15,8 @@
 #include "i2cTemp.h"
 #include "I2CTaskMsgTypes.h"
 #include "conductor.h"
+#include "mywebmap.h"
+#include "navtask.h"
 
 /* *********************************************** */
 // definitions and data structures that are private to this file
@@ -31,6 +33,11 @@
 // end of defs
 /* *********************************************** */
 
+/*struct myMapWebs {
+	//int myMapArray[30][30];
+	//char *myOutputSting;
+	int testStruct;
+};	*/
 /* The i2cTemp task. */
 static portTASK_FUNCTION_PROTO( vConductorUpdateTask, pvParameters );
 
@@ -67,6 +74,34 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	// Like all good tasks, this should never exit
 	for(;;)
 	{
+		mapStruct.testStruct = 646; 
+		/*int array[10][10]={{1,1,1,1,1,1,1,1,1,1},
+			{1,0,0,0,0,0,0,0,0,1},
+			{1,0,0,0,0,0,0,0,0,1},
+			{1,0,0,0,0,0,1,1,1,1},
+			{1,0,0,0,0,0,1,0,0,0},
+			{1,0,0,0,0,0,1,1,1,1},
+			{1,0,0,0,0,0,0,0,0,1},
+			{1,1,1,1,0,0,0,0,0,0,0,1},
+			{0,0,0,1,0,0,0,0,1,1,1,1},
+			{0,0,0,1,1,1,1,1,1,0,0,0}};		   */
+			int hi =0;
+			int hj=0;
+			for (hi=0; hi<10 ; hi++) {
+				for ( hj=0; hj<10; hj++){
+					//if(array[hi][hj]==1){
+					if(hi==0 ||hi == 9){
+				  		mapStruct.myMapArray[hi][hj]=1;
+						}
+					else if( hj==0 || hj==9) {
+						mapStruct.myMapArray[hi][hj]=1;
+					} 
+					else {
+						mapStruct.myMapArray[hi][hj]=0;
+					}
+					//}
+				}
+			} 
 		// Wait for a message from an I2C operation
 		if (vtI2CDeQ(devPtr,vtI2CMLen,Buffer,&rxLen,&recvMsgType,&status) != pdTRUE) {
 			VT_HANDLE_FATAL_ERROR(0);

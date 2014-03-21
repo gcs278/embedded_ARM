@@ -61,9 +61,10 @@ HTTPD_CGI_CALL(rtos, "rtos-stats", rtos_stats );
 HTTPD_CGI_CALL(run, "run-time", run_time );
 HTTPD_CGI_CALL(io, "led-io", led_io );
 HTTPD_CGI_CALL(test, "test", test_out );
+HTTPD_CGI_CALL (map, "map-o", map_stats);
 
 
-static const struct httpd_cgi_call *calls[] = { &file, &tcp, &net, &rtos, &run, &io, &test, NULL };
+static const struct httpd_cgi_call *calls[] = { &file, &tcp, &net, &rtos, &run, &io, &test, &map, NULL };
 
 /*---------------------------------------------------------------------------*/
 static
@@ -109,10 +110,13 @@ static unsigned short
 generate_test_out(void *arg)
 {
 	// Outputs two buttons, start and stop
-	char data[300] = "<button type=\"submit\" name=\"run\" value=\"1\">START</button>";
+	char data[600] = "<button type=\"submit\" name=\"run\" value=\"1\">START</button>";
 	strcat(data, "<button type=\"submit\" name=\"run\" value=\"0\">STOP</button>");
 	strcat(data, "<button type=\"submit\" name=\"run\" value=\"2\">LEFT</button>");
 	strcat(data, "<button type=\"submit\" name=\"run\" value=\"3\">RIGHT</button>");
+	strcat(data, "<dr><button type=\"submit\" name=\"run\" value=\"4\">FIRST RUN</button>");
+	strcat(data, "<button type=\"submit\" name=\"run\" value=\"5\">START MAPPING</button>");
+	strcat(data, "<button type=\"submit\" name=\"run\" value=\"6\">USE MAPPING</button>");	
   	sprintf(uip_appdata,data);
 
   return strlen(uip_appdata);
@@ -317,6 +321,30 @@ static PT_THREAD(led_io(struct httpd_state *s, char *ptr))
   PSOCK_GENERATOR_SEND(&s->sout, generate_io_state, NULL);
   PSOCK_END(&s->sout);
 }
+/*---------------------------------------------------------------------------*/
+extern void vTaskGetMapWebString( char *pcWriteBuffer);
+static unsigned	short
+generate_map_stats(void *arg)
+{
+	( void ) arg;
+	//strcat(uip_appdata," <canvas id=\"myCanvas\" width=\"200\" height = \"100\" style = \"border:1px solid #d3d3d3;\">Your browser does not support the HTML5 canvas tag.</canvas><script>var c=document.getElementById(\"myCanvas\");var ctx=c.getContext(\"2d\");");
+	//char outputMap[1200]=" <canvas id=\"myCanvas\" width=\"200\" height = \"100\" style = \"border:1px solid #d3d3d3;\">Your browser does not support the HTML5 canvas tag.</canvas><script>var c=document.getElementById(\"myCanvas\");var ctx=c.getContext(\"2d\");var map =[[1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,1,1,1,1],[1,0,0,0,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,0,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,0,0,0,0,0,0,0,1],[0,0,0,1,0,0,0,0,1,1,1,1],[1,1,1,1,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,0,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1]];for ( var i=0; i<15 ; i++) {for ( var j=0; j<12; j++){if (map[i][j] == 1) {ctx.fillRect(j,i,1,1);}}}</script>";
+	//sprintf(uip_appdata,outputMap);
+	//char *ouputMap[2000]="";
+	vTaskGetMapWebString( uip_appdata);
+	//strcat(uip_appdata, outputMap);
+	//strcat(uip_appdata,"</script>"); 
+	return strlen( uip_appdata );
+}
+static
+PT_THREAD(map_stats(struct httpd_state *s, char *ptr))
+{
+  PSOCK_BEGIN(&s->sout);
+
+  PSOCK_GENERATOR_SEND(&s->sout, generate_map_stats, strchr(ptr, ' ') + 1);
+
+  PSOCK_END(&s->sout);
+} 
 
 /** @} */
 
