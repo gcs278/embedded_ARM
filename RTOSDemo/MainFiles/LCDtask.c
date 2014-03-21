@@ -11,6 +11,7 @@
 #include "vtUtilities.h"
 #include "LCDtask.h"
 #include "string.h"
+#include "mywebmap.h"
 
 // I have set this to a larger stack size because of (a) using printf() and (b) the depth of function calls
 //   for some of the LCD operations
@@ -196,7 +197,8 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 	curLine = 0;
 	// This task should never exit
 	for(;;)
-	{	
+	{
+		printf ("%d",mapStruct.testStruct);	
 		#ifdef INSPECT_STACK   
 		CurrentStackLeft = uxTaskGetStackHighWaterMark(NULL);
 		float remainingStack = CurrentStackLeft;

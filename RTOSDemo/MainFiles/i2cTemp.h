@@ -53,5 +53,8 @@ void moveRight(char* msg);
 void startGettingMotor(char* msg);
 void stopGettingMotor(char* msg);
 void moveBack(char* msg);
+void moveUse(char* msg);
+void moveMap(char* msg);
+void moveStart(char* msg);
 
 #endif

@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>FreeRTOS.org uIP WEB server demo</title>
+  </head>
+  <BODY>
+<font face="arial">
+<a href="index.shtml">Task Stats</a> <b>|</b> <a href="runtime.shtml">Run Time Stats</a> <b>|</b> <a href="stats.shtml">TCP Stats</a> <b>|</b> <a href="tcp.shtml">Connections</a> <b>|</b> <a href="http://www.freertos.org/">FreeRTOS.org Homepage</a> <b>|</b> <a href="io.shtml">IO</a><b>|</b><a href="test.shtml">CONTROLS</a><b>|</b><a href="map.shtml">MAPP</a>
+<br><p>
+<hr>
+<br><p>
+<h2>Team 1 mapping</h2>
+</font>
+<canvas id="myCanvas" width="200" height = "100" style = "border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+<script>
+
+var c=document.getElementById("myCanvas");
+var ctx=c.getContext("2d");
+</script>
+<!--<canvas id="myCanvas" width="200" height = "100" style = "border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+<script>
+
+var c=document.getElementById("myCanvas");
+var ctx=c.getContext("2d");
+var map =[[1,1,1,1,1,1,1,1,1,1,1,1],
+			[1,0,0,0,0,0,0,0,0,0,0,1],
+			[1,0,0,0,0,0,0,0,0,0,0,1],
+			[1,0,0,0,0,0,0,0,1,1,1,1],
+			[1,0,0,0,0,0,0,0,1,0,0,0],
+			[1,0,0,0,0,0,0,0,1,1,1,1],
+			[1,0,0,0,0,0,0,0,0,0,0,1],
+			[1,1,1,1,0,0,0,0,0,0,0,1],
+			[0,0,0,1,0,0,0,0,1,1,1,1],
+			[1,1,1,1,0,0,0,0,1,0,0,0],
+			[1,0,0,0,0,0,0,0,1,0,0,0],
+			[1,0,0,0,0,0,0,0,1,1,1,1],
+			[1,0,0,0,0,0,0,0,0,0,0,1],
+			[1,0,0,0,0,0,0,0,0,0,0,1],
+			[1,1,1,1,1,1,1,1,1,1,1,1]];
+for ( var i=0; i<15 ; i++) {
+	for ( var j=0; j<12; j++){
+		if (map[i][j] == 1) {
+			ctx.fillRect(j,i,1,1);
+		}
+	}
+}
+</script> -->
+<h3>wowwowow</h3>
+
+%! map-o
+<script>
+for (i =0; i<x.length ; i++){
+    ctx.fillRect(x[i] , y[i], 1, 1);
+}
+x.toString();
+y.toString();
+</script>
+</body>
+</html>
+

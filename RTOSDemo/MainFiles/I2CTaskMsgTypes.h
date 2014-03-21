@@ -16,5 +16,7 @@
 
 // Rover message types
 #define roverI2CMsgTypeFullData 6
+
+#define navI2CMsgTypeRead 7
  
 #endif
