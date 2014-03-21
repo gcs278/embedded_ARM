@@ -78,24 +78,26 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		// This isn't a state machine, it is just acting as a router for messages
 		switch(recvMsgType) {
 		case vtI2CMsgTypeTempInit: {
-			SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
+			SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
 			break;
 		}
 		case vtI2CMsgTypeTempRead1: {
-			SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
+				printf("1");
+			SendTempValueMsg(tempData,recvMsgType,(Buffer),portMAX_DELAY);
+				printf("4");
 			break;
 		}
 		case vtI2CMsgTypeTempRead2: {
-			SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
+	//		SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
 			break;
 		}
 		case vtI2CMsgTypeTempRead3: {
-			SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
+	//		SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
 			break;
 		}
 		// When we receive data from rover
 		case roverI2CMsgTypeFullData: {
-			SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
+	//		SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
 			break;
 		}
 		default: {
@@ -107,12 +109,3 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 
 	}
 }
-
-//portBASE_TYPE sendConductorMessage(g9Msg* msg,portTickType ticksToBlock){
-//	if (msg == NULL || inQ == NULL ) {
-//		return pdFALSE;
-//	}
-//
-//	return(xQueueSend(inQ,(void*)(msg),ticksToBlock));
-//}
-

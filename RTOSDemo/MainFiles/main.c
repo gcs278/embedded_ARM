@@ -190,6 +190,8 @@ static vtI2CStruct vtI2C0;
 static vtTempStruct tempSensorData;
 // data structure required for conductor task
 static vtConductorStruct conductorData;
+
+static RoverCommStruct roverComm;
 #endif
 
 #if USE_MTJ_LCD == 1
@@ -227,9 +229,11 @@ int main( void )
 
 	#define USE_WEB_SERVER 1
 	#if USE_WEB_SERVER == 1
+
+	roverComm.i2cStruct = &vtI2C0;
 	// Not a standard demo -- but also not one of mine (MTJ)
 	/* Create the uIP task.  The WEB server runs in this task. */
-    xTaskCreate( vuIP_Task, ( signed char * ) "uIP", mainBASIC_WEB_STACK_SIZE, ( void * ) NULL, mainUIP_TASK_PRIORITY, NULL );
+    xTaskCreate( vuIP_Task, ( signed char * ) "uIP", mainBASIC_WEB_STACK_SIZE, ( void * ) &roverComm, mainUIP_TASK_PRIORITY, NULL );
 	#endif
 
 	#if USE_MTJ_LCD == 1

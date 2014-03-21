@@ -9,8 +9,13 @@ typedef struct __TempStruct {
 	vtLCDStruct *lcdData;
 	xQueueHandle inQ;
 } vtTempStruct;
+
+typedef struct __RoverCommStruct {
+	vtI2CStruct* i2cStruct;
+} RoverCommStruct;
+
 // Maximum length of a message that can be received by this task
-#define vtTempMaxLen   (sizeof(portTickType))
+#define vtTempMaxLen   10//(sizeof(portTickType))
 
 // Public API
 //
@@ -38,12 +43,15 @@ portBASE_TYPE SendTempTimerMsg(vtTempStruct *tempData,portTickType ticksElapsed,
 //   value -- The value to send
 //   ticksToBlock -- how long the routine should wait if the queue is full
 // Return:
-//   Result of the call to xQueueSend()
-portBASE_TYPE SendTempValueMsg(vtTempStruct *tempData,uint8_t msgType,uint8_t value,portTickType ticksToBlock);
+//   Result of the call to xQueueSend()				
+portBASE_TYPE SendTempValueMsg(vtTempStruct *tempData,uint8_t msgType,uint8_t* values,portTickType ticksToBlock);
 
 void moveForward(char* msg);
 void moveStop(char* msg);
 void moveLeft(char* msg);
 void moveRight(char* msg);
+void startGettingMotor(char* msg);
+void stopGettingMotor(char* msg);
+void moveBack(char* msg);
 
 #endif

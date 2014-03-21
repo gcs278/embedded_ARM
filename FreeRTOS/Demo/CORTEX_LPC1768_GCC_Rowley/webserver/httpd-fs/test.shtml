@@ -3,7 +3,7 @@
   <head>
     <title>FreeRTOS.org uIP WEB server demo</title>
   </head>
-  <BODY>
+  <body>
 <font face="arial">
 <a href="index.shtml">Task Stats</a> <b>|</b> <a href="runtime.shtml">Run Time Stats</a> <b>|</b> <a href="stats.shtml">TCP Stats</a> <b>|</b> <a href="tcp.shtml">Connections</a> <b>|</b> <a href="http://www.freertos.org/">FreeRTOS.org Homepage</a> <b>|</b> <a href="io.shtml">IO</a><b>|</b><a href="test.shtml">CONTROLS</a>o
 <br><p>
@@ -24,4 +24,37 @@ DEBUGGING CONTROLLER
 </font>
 </body>
 </html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script>
+		jQuery(document).ready(function($) {
+		$('body').keydown(function(evt) {
+		    switch(evt.keyCode) {
+		    	case 82: // R - run data collection
+		    		$.get("?run=4");
+		    		break;
+		    	case 83: // S - stop data collection
+		    		$.get("?run=5");
+		    		break;
 
+		        case 37: // left
+		            $.get( "?run=3");
+		            break;
+
+		        case 38: // up
+		        	$.get( "?run=1");
+		            break;
+
+		        case 39: // right
+		       		$.get( "?run=2");
+		            break;
+
+		        case 40: // down
+		        	if (evt.shiftKey) // shift + down == back up
+		        		$.get("?run=6");
+		        	else
+		        		$.get( "?run=0");
+		            break;
+		    };
+		});    
+    });
+</script>

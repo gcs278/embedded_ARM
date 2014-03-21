@@ -71,6 +71,9 @@
 #include "EthDev.h"
 #include "ParTest.h"
 
+#include "i2ctemp.h"
+#include "I2CTaskMsgTypes.h"
+
 /*-----------------------------------------------------------*/
 
 /* How long to wait before attempting to connect the MAC again. */
@@ -114,6 +117,8 @@ clock_time_t clock_time( void )
 }
 /*-----------------------------------------------------------*/
 
+static RoverCommStruct* roverComm;
+
 void vuIP_Task( void *pvParameters )
 {
 portBASE_TYPE i;
@@ -121,7 +126,7 @@ uip_ipaddr_t xIPAddr;
 struct timer periodic_timer, arp_timer;
 extern void ( vEMAC_ISR_Wrapper )( void );
 
-	( void ) pvParameters;
+	roverComm = ( RoverCommStruct*) pvParameters;
 
 	/* Initialise the uIP stack. */
 	timer_set( &periodic_timer, configTICK_RATE_HZ / 2 );
@@ -261,7 +266,10 @@ extern void vParTestSetLEDState( long lState );
 		/* Turn the FIO1 LED's on or off in accordance with the check box status. */
 		if( strstr( c, "run=1" ) != NULL )
 		{
-			moveForward("GO");
+			uint8_t i2cRoverMoveForward[] = {0x01, 0x00};
+			if (vtI2CEnQ(roverComm->i2cStruct,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
 			vParTestSetLEDState( pdTRUE );
 		}
 		else if ( strstr ( c, "run=0" ) != NULL ) {
@@ -269,12 +277,21 @@ extern void vParTestSetLEDState( long lState );
 			vParTestSetLEDState( pdTRUE );
 		}
 		else if ( strstr ( c, "run=2" ) != NULL ) {
-			moveLeft("LEFT");
+			moveLeft("RIGHT");
 			vParTestSetLEDState( pdTRUE );
 		}
 		else if ( strstr ( c, "run=3" ) != NULL ) {
-			moveRight("RIGHT");
+			moveRight("LEFT");
 			vParTestSetLEDState( pdTRUE );
+		}
+		else if ( strstr ( c, "run=4" ) != NULL ) {
+			startGettingMotor("DATASTART");
+		}
+		else if ( strstr ( c, "run=5" ) != NULL ) {
+			stopGettingMotor("DATASTOP");
+		}
+		else if ( strstr ( c, "run=6" ) != NULL ) {
+		 	moveBack("BACK");
 		}
 		else
 		{

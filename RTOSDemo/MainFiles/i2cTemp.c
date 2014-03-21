@@ -45,7 +45,9 @@ static portTASK_FUNCTION_PROTO( vi2cTempUpdateTask, pvParameters );
 int moveForwardFlag = 0;
 int moveStopFlag = 0;
 int moveRightFlag = 0;
+int moveBackFlag = 0;
 int moveLeftFlag = 0;
+int motorDataFlag = 0;
 char message[30];
 int count = 0;
 
@@ -82,19 +84,22 @@ portBASE_TYPE SendTempTimerMsg(vtTempStruct *tempData,portTickType ticksElapsed,
 	return(xQueueSend(tempData->inQ,(void *) (&tempBuffer),ticksToBlock));
 }
 
-portBASE_TYPE SendTempValueMsg(vtTempStruct *tempData,uint8_t msgType,uint8_t value,portTickType ticksToBlock)
+portBASE_TYPE SendTempValueMsg(vtTempStruct *tempData,uint8_t msgType,uint8_t* values,portTickType ticksToBlock)
 {
 	vtTempMsg tempBuffer;
-
 	if (tempData == NULL) {
 		VT_HANDLE_FATAL_ERROR(0);
 	}
-	tempBuffer.length = sizeof(value);
+	tempBuffer.length = 10;
 	if (tempBuffer.length > vtTempMaxLen) {
 		// no room for this message
-		VT_HANDLE_FATAL_ERROR(tempBuffer.length);
+	//	VT_HANDLE_FATAL_ERROR(tempBuffer.length);
 	}
-	memcpy(tempBuffer.buf,(char *)&value,sizeof(value));
+	int i;
+	for (i=0; i<10; i++) {
+	 	tempBuffer.buf[i] = values[i];
+	}
+	//memcpy(tempBuffer.buf,(char *)&values,sizeof(values));
 	tempBuffer.msgType = msgType;
 	return(xQueueSend(tempData->inQ,(void *) (&tempBuffer),ticksToBlock));
 }
@@ -122,8 +127,8 @@ uint8_t getValue(vtTempMsg *Buffer)
 	uint8_t i2cRoverMoveStop[] = {0x05, 0x00};
 
 	// REQUESTING DATA
-	const uint8_t i2cRoverRequestData[] = {0x07};
-
+	uint8_t i2cRoverMotorData[] = {0x07, 0x00};
+	uint8_t i2cRoverSensorFullData[] = {0x11, 0x00};
 
 	const uint8_t i2cCmdStartConvert[]= {0xEE};
 	const uint8_t i2cCmdStopConvert[]= {0x22};
@@ -209,6 +214,23 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			moveStopFlag = 0;
 		}
 
+		if ( moveBackFlag ) {
+			count += 1;
+
+			i2cRoverMoveBack[1] = count;
+			// NOTE: THAT 2 DETERMINES RX LENGTH!!
+			// Tell rover to move forward
+			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveBack),i2cRoverMoveBack,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+
+			// Print something on LCD
+			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+			moveBackFlag = 0;
+		}
+
 		if ( moveLeftFlag ) {
 			count += 1;
 
@@ -270,6 +292,19 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 		case TempMsgTypeTimer: {
 			// Timer messages never change the state, they just cause an action (or not) 
 			if ((currentState != fsmStateInit1Sent) && (currentState != fsmStateInit2Sent)) {
+				if (motorDataFlag) {
+					count ++;
+					//i2cRoverMotorData[1] = count;
+					//if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMotorData),i2cRoverMotorData,10) != pdTRUE) {
+					//	VT_HANDLE_FATAL_ERROR(0);
+					//}
+					
+					i2cRoverSensorFullData[1] = count;
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSensorFullData),i2cRoverSensorFullData,10) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					}
+				}
+
 				// Read in the values from the temperature sensor
 				// We have three transactions on i2c to read the full temperature 
 				//   we send all three requests to the I2C thread (via a Queue) -- responses come back through the conductor thread
@@ -301,16 +336,35 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			if (currentState != fsmStateTempRead1) {
 				VT_HANDLE_FATAL_ERROR(0);
 			}
-			
-			//analog_buffer[buffer_loc] = msgBuffer.buf[0];//getValue(&msgBuffer);
 
 			char str[20];
-			sprintf(str,"%d,%d,%d,%d,%d", msgBuffer.buf[0], msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],
-			msgBuffer.buf[4]);//,msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9],msgBuffer.buf[10]);
-			//buffer_loc++;
+		//	sprintf(str,"%d,%d,%d,%d,%d",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3]
+		//	, msgBuffer.buf[4]);//,msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9],msgBuffer.buf[10]);
 
-			//analog_buffer[buffer_loc] = msgBuffer.buf[1];//getValue(msgBuffer.buf[1]);
-			//buffer_loc++;
+//			int time = (msgBuffer.buf[1]*200); // in ms
+//			int i;
+//			int distance = 0;
+//			for (i = 0; i < msgBuffer.buf[1] % 10; i++) {
+//				if ( i < 8)
+//					distance += msgBuffer.buf[i+2];
+//			}
+//			if ( time > 100000 ) {
+//			 	time = 10000;
+//			}
+//			distance = distance*0.135;
+//			int cmPerSec = distance/((float)time/1000);
+//			sprintf(str,"%d,%dms%dcm%dc/s",msgBuffer.buf[0],time,distance,cmPerSec);
+
+			int i;
+			int distance = 0;
+		//	sprintf(str,"%d,%d,%d,%d",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3]);
+			for (i = 0; i < msgBuffer.buf[1] % 10; i++) {
+				if ( i < 8)
+					distance += msgBuffer.buf[i+2];
+			}
+			distance = distance / (i+1);
+
+			sprintf(str,"%d,%dcm",msgBuffer.buf[0],msgBuffer.buf[2]);
 
 		    // Print something on LCD
 			if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
@@ -390,8 +444,8 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 
 
 	}
-}
 
+   }
 void moveForward(char* msg) {
    
 	strcpy(message, msg);
@@ -411,4 +465,19 @@ void moveRight(char* msg) {
 void moveLeft(char* msg) {
 	strcpy(message, msg);
 	moveLeftFlag = 1;
+}
+
+void moveBack(char* msg) {
+	strcpy(message, msg);
+	moveBackFlag = 1;
+}
+
+void startGettingMotor(char* msg) {
+	strcpy(message, msg);
+	motorDataFlag = 1;
+}
+
+void stopGettingMotor(char* msg) {
+ 	strcpy(message, msg);
+	motorDataFlag = 0;
 }
