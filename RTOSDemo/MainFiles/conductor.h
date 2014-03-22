@@ -3,6 +3,7 @@
 #include "vtI2C.h"
 #include "i2cTemp.h"
 #include "navtask.h"
+#include "Messages.h"
 // Structure used to pass parameters to the task
 // Do not touch...
 typedef struct __ConductorStruct {
@@ -11,6 +12,8 @@ typedef struct __ConductorStruct {
 	myNavStruct *navData;
 } vtConductorStruct;
 
+
+int retrans = 0;
 // Public API
 //
 // The job of this task is to read from the message queue that is output by the I2C thread and to distribute the messages to the right
@@ -23,6 +26,7 @@ typedef struct __ConductorStruct {
 //   temperature: pointer to the data structure for an LCD task (may be NULL)
 void vStartConductorTask(vtConductorStruct *conductorData,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature, myNavStruct *navs);
 
+void setRetrans();
 //portBASE_TYPE sendConductorMessage(g9Msg* msg,portTickType ticksToBlock);
 
 #endif

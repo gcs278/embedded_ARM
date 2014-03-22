@@ -64,9 +64,7 @@ void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI
 portBASE_TYPE SendNavValueMsg(myNavStruct *sensorData, uint8_t msgType, uint8_t* value, portTickType ticksToBlock)
 {
 	myNavMsg tempBuffer;
-	printf("  1 ");
 	if (sensorData == NULL) {
-		printf("  2 ");
 		VT_HANDLE_FATAL_ERROR(0);
 	}
 	tempBuffer.length = 10;
@@ -80,7 +78,6 @@ portBASE_TYPE SendNavValueMsg(myNavStruct *sensorData, uint8_t msgType, uint8_t*
 	}
 	//memcpy(tempBuffer.buf,(char *)&values,sizeof(values));
 	tempBuffer.msgType = msgType;
-	printf("  for the heck of it");
 	return(xQueueSend(sensorData->inQ,(void *) (&tempBuffer),ticksToBlock));
 }
 
@@ -103,15 +100,18 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	//flag
 	uint8_t startNav = 0;
 
+	int lastDistance = 0; // The last distance calculated
+
+	int extender = 0; // For extending the time between right turns
 
 	const uint8_t i2cRoverMoveForward[] = {0x01, 0x00};
-	const uint8_t i2cRoverMove90[] = {0x1f, 0x00};
+	const uint8_t i2cRoverMove90[] = {0x1f, 0x33};
 
 	for(;;)
 	{
 	// tell what the rover what to do
 		
-		printf("IAM HERE");
+		//printf(" navTopFor ");
 		// Wait for a message from conductor
 		if (xQueueReceive(param->inQ,(void *) &msgBuffer,portMAX_DELAY) != pdTRUE) {
 			printf("  boooom ");
@@ -119,36 +119,50 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 		}
 		switch(getMsgType(&msgBuffer)) {
 		case navI2CMsgTypeRead:
+			printf(" navStart\n");
 			startNav = 1;
 			break;
+		case 0x89:
+		  	if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMove90),i2cRoverMove90,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			} 
+			break;
 		case 0x11:
-			if(startNav == 1) {
+			printf("NavMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
+			printf("Extender: %d\n",extender);
+			extender--;
+			if ( extender < 0 ) {
+			//if(startNav == 1) {
 				int i;
 				int distance = 0;
-				printf(" %d,%d,%d,%d,%d,%d,%d,%d,%d,%d",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
 				for (i = 0; i < msgBuffer.buf[1] % 10; i++) {
 					if ( i < 8)
 					distance += msgBuffer.buf[i+2];
 				}
 				distance = distance / (i+1);
-				printf(" hi%dhi ", distance);
-				if (distance < 30 && distance >1) {
-					printf("  90  "); 
+				printf("Distance: %d\n", distance);
+				if (distance < 30 && lastDistance < 30 && distance >1 && lastDistance > 1) {
+					printf("----sent90\n"); 
+					setRetrans();
 					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMove90),i2cRoverMove90,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
-					} 
+					} 	 
+					extender = 15;
 				}
 				else {
-					printf(" Move ");
+					//printf("----sentMove\n");
 					/*if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
 					} */
 				}
-			}
+				lastDistance = distance;
+		//	}
+		}
 			break;
 		default: {
+			printf("  navDefault\n");
 			//VT_HANDLE_FATAL_ERROR(getMsgType(&msgBuffer));
 			break;
 		}

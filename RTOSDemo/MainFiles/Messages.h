@@ -40,4 +40,6 @@
 #define RoverMsgMotorRight75 0x29
 #define RoverMsgMotorRight90 0x2A
 
+	int messageCount = 0;
+
 #endif

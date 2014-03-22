@@ -72,7 +72,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	vtTempStruct *tempData = param->tempData;
 	myNavStruct *navData = param->navData;
 	uint8_t recvMsgType;
-
+	int retransCount = 0;
 	// Like all good tasks, this should never exit
 	for(;;)
 	{
@@ -113,7 +113,17 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		//   This just shows going to one task/queue, but you could easily send to
 		//   other Q/tasks for other message types
 		// This isn't a state machine, it is just acting as a router for messages
-		printf("     %d     ",Buffer[0]);
+		printf("New Message: %d\n",Buffer[0]);
+		if ( retrans ) {
+			printf("COUNTING RETRANS: %d\n", retransCount);
+			if ( retransCount == 5)    {
+				printf(" RETRANS\n");
+				SendNavValueMsg(navData,0x89,Buffer,portMAX_DELAY);
+				retransCount = 0;
+			} else {
+				retransCount ++;
+			}
+		}
 		switch(Buffer[0]) {
 		case 0x22: {
 			SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
@@ -122,6 +132,10 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		case 0xa5: {
 			SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
 			break;
+		}
+		case 0x33: {
+			retrans = 0;
+			retransCount = 0;
 		}
 		/*case vtI2CMsgTypeTempRead1: {
 				printf("1");
@@ -160,4 +174,8 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 
 
 	}
+}
+
+void setRetrans() {
+ 	retrans = 1;
 }
