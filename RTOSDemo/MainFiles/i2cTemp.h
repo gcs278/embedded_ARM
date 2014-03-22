@@ -2,6 +2,7 @@
 #define I2CTEMP_TASK_H
 #include "vtI2C.h"
 #include "lcdTask.h"
+#include "navtask.h"
 // Structure used to pass parameters to the task
 // Do not touch...
 typedef struct __TempStruct {
@@ -12,6 +13,7 @@ typedef struct __TempStruct {
 
 typedef struct __RoverCommStruct {
 	vtI2CStruct* i2cStruct;
+	myNavStruct* myNavCommand;
 } RoverCommStruct;
 
 // Maximum length of a message that can be received by this task

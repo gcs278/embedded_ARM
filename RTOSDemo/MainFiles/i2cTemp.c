@@ -348,14 +348,14 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			if ((currentState != fsmStateInit1Sent) && (currentState != fsmStateInit2Sent)) {
 
 				if (motorDataFlag) {
-					count ++;
+					//count ++;
 					//i2cRoverMotorData[1] = count;
 					//if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMotorData),i2cRoverMotorData,10) != pdTRUE) {
 					//	VT_HANDLE_FATAL_ERROR(0);
 					//}
 					
-					i2cRoverSensorFullData[1] = count;
-					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSensorFullData),i2cRoverSensorFullData,10) != pdTRUE) {
+					i2cRoverSensorFullData[1] = 0x22;
+					if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x4F,sizeof(i2cRoverSensorFullData),i2cRoverSensorFullData,10) != pdTRUE) {
 						VT_HANDLE_FATAL_ERROR(0);
 					}
 				}

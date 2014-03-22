@@ -120,6 +120,7 @@ You should read the note above.
 #include "vtI2C.h"
 #include "myTimers.h"
 #include "conductor.h"
+#include "navtask.h"
 
 /* syscalls initialization -- *must* occur first */
 #include "syscalls.h"
@@ -188,6 +189,8 @@ static char *pcStatusMessage = mainPASS_STATUS_MESSAGE;
 static vtI2CStruct vtI2C0;
 // data structure required for one temperature sensor task
 static vtTempStruct tempSensorData;
+// data stricture for nav
+static myNavStruct navData;
 // data structure required for conductor task
 static vtConductorStruct conductorData;
 
@@ -231,6 +234,7 @@ int main( void )
 	#if USE_WEB_SERVER == 1
 
 	roverComm.i2cStruct = &vtI2C0;
+	roverComm.myNavCommand = &navData;
 	// Not a standard demo -- but also not one of mine (MTJ)
 	/* Create the uIP task.  The WEB server runs in this task. */
     xTaskCreate( vuIP_Task, ( signed char * ) "uIP", mainBASIC_WEB_STACK_SIZE, ( void * ) &roverComm, mainUIP_TASK_PRIORITY, NULL );
@@ -261,8 +265,10 @@ int main( void )
 	#endif
 	// Here we set up a timer that will send messages to the Temperature sensing task.  The timer will determine how often the sensor is sampled
 	startTimerForTemperature(&tempSensorData);
+
+	myStartNavTask(&navData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0);
 	// start up a "conductor" task that will move messages around
-	vStartConductorTask(&conductorData,mainCONDUCTOR_TASK_PRIORITY,&vtI2C0,&tempSensorData);
+	vStartConductorTask(&conductorData,mainCONDUCTOR_TASK_PRIORITY,&vtI2C0,&tempSensorData, &navData);
 	#endif
 
     /* Create the USB task. MTJ: This routine has been modified from the original example (which is not a FreeRTOS standard demo) */

@@ -6,7 +6,7 @@
 struct myMapWebVars {
 	int myMapArray [10][10];
 	char *myOutputSting;
-	int testStruct;
+	//int testStruct;
 	int testVar;
 } mapStruct;
 
