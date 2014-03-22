@@ -346,6 +346,7 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 		case TempMsgTypeTimer: {
 			// Timer messages never change the state, they just cause an action (or not) 
 			if ((currentState != fsmStateInit1Sent) && (currentState != fsmStateInit2Sent)) {
+
 				if (motorDataFlag) {
 					count ++;
 					//i2cRoverMotorData[1] = count;

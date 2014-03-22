@@ -54,6 +54,34 @@ DEBUGGING CONTROLLER
 		        	else
 		        		$.get( "?run=0");
 		            break;
+
+	        	case 49: // down
+		        	if (evt.shiftKey) // shift + down == back up
+		        		$.get("?run=9");
+		        	else
+		        		$.get( "?run=10");
+		            break;
+
+	        	case 50: // down
+		        	if (evt.shiftKey) // shift + down == back up
+		        		$.get("?run=7");
+		        	else
+		        		$.get( "?run=8");
+		            break;
+
+		        case 51: // down
+		        	if (evt.shiftKey) // shift + down == back up
+		        		$.get("?run=11");
+		        	else
+		        		$.get( "?run=12");
+		            break;
+
+		        case 52: // down
+		        	if (evt.shiftKey) // shift + down == back up
+		        		$.get("?run=13");
+		        	else
+		        		$.get( "?run=14");
+		            break;
 		    };
 		});    
     });
