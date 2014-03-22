@@ -19,7 +19,7 @@ typedef struct __NavStruct {
 // start the task
 void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c);
 
-portBASE_TYPE SendNavValueMsg(myNavStruct *NavData, uint8_t msgType, uint8_t value, portTickType ticksToBlock);
+portBASE_TYPE SendNavValueMsg(myNavStruct *NavData, uint8_t msgType, uint8_t *value, portTickType ticksToBlock);
 
 //unint8_t myCommandRover();
 

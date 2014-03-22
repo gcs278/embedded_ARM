@@ -198,7 +198,7 @@ static portTASK_FUNCTION( vLCDUpdateTask, pvParameters )
 	// This task should never exit
 	for(;;)
 	{
-		printf ("%d",mapStruct.testStruct);	
+		//printf ("%d",mapStruct.testStruct);	
 		#ifdef INSPECT_STACK   
 		CurrentStackLeft = uxTaskGetStackHighWaterMark(NULL);
 		float remainingStack = CurrentStackLeft;
