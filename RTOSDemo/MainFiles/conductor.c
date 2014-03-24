@@ -114,7 +114,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		//   other Q/tasks for other message types
 		// This isn't a state machine, it is just acting as a router for messages
 		printf("New Message: %d\n",Buffer[0]);
-		if ( retrans ) {
+		/*if ( retrans ) {
 			printf("COUNTING RETRANS: %d\n", retransCount);
 			if ( retransCount == 5)    {
 				printf(" RETRANS\n");
@@ -123,20 +123,20 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			} else {
 				retransCount ++;
 			}
-		}
-		switch(Buffer[0]) {
-		case 0x22: {
-			SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
-			break;
-		}
-		case 0xa5: {
-			SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
-			break;
-		}
-		case 0x33: {
-			retrans = 0;
-			retransCount = 0;
-		}
+		} */
+		// Switch on the definition of the incoming count
+		switch(countDefArray[Buffer[0]]) {
+			case RoverMsgSensorAllData: {
+				SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
+				break;
+			}
+			case 0xa5: {
+				SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
+				break;
+			}
+			case RoverMsgMotorLeft90: {
+				SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
+			}
 		/*case vtI2CMsgTypeTempRead1: {
 				printf("1");
 			SendTempValueMsg(tempData,recvMsgType,(Buffer),portMAX_DELAY);
@@ -171,6 +171,13 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			break;
 		}
 		}
+		countDefArray[Buffer[0]] = CleanMsg;
+		// Check to see if the last five have been retrieved
+		uint8_t i;
+		for (i = Buffer[0]-1; i > Buffer[0] - 5; i--) {
+			if ( countDefArray[i] == RoverMsgMotorLeft90 )
+				SendNavValueMsg(navData,0x89,Buffer,portMAX_DELAY);
+		}
 
 
 	}
@@ -179,3 +186,15 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 void setRetrans() {
  	retrans = 1;
 }
+
+void insertCountDef(unsigned char def) {
+ 	countDefArray[messageCount] = def;
+}
+
+unsigned char getMsgCount() {
+ 	return messageCount;
+}
+
+void incrementMsgCount() {
+	messageCount++;
+} 

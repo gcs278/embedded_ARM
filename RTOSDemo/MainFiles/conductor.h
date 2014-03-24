@@ -14,6 +14,8 @@ typedef struct __ConductorStruct {
 
 
 int retrans = 0;
+
+unsigned char countDefArray[256];
 // Public API
 //
 // The job of this task is to read from the message queue that is output by the I2C thread and to distribute the messages to the right
@@ -27,6 +29,10 @@ int retrans = 0;
 void vStartConductorTask(vtConductorStruct *conductorData,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature, myNavStruct *navs);
 
 void setRetrans();
+
+void insertCountDef(unsigned char def);
+unsigned char getMsgCount();
+void incrementMsgCount();
 //portBASE_TYPE sendConductorMessage(g9Msg* msg,portTickType ticksToBlock);
 
 #endif

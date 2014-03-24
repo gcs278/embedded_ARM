@@ -17,7 +17,7 @@
 #include "I2CTaskMsgTypes.h"
 // this is a test
 #include "mywebmap.h"
-
+#include "Messages.h"
 /* *********************************************** */
 // definitions and data structures that are private to this file
 // Length of the queue to this task
@@ -354,10 +354,12 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 					//	VT_HANDLE_FATAL_ERROR(0);
 					//}
 					
-					i2cRoverSensorFullData[1] = 0x22;
+					i2cRoverSensorFullData[1] = getMsgCount();
+					insertCountDef(RoverMsgSensorAllData);
 					if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x4F,sizeof(i2cRoverSensorFullData),i2cRoverSensorFullData,10) != pdTRUE) {
 						VT_HANDLE_FATAL_ERROR(0);
 					}
+					incrementMsgCount();
 				}
 
 				// Read in the values from the temperature sensor
