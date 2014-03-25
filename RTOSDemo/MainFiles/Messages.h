@@ -1,7 +1,8 @@
 #ifndef MESSAGES_H
 #define MESSAGES_H
 
-#define CleanMsg 0x00 // For clearing
+#define CleanMsg 0x00	// For clearing
+#define BadMsg 0xFF 	// For when we receive a bad message
 
 // Rover Debugging commands
 #define RoverMsgMotorForward 0x01

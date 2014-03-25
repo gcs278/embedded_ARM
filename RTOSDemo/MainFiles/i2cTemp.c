@@ -55,6 +55,7 @@ int moveMapFlag = 0;
 int moveStartFlag = 0;
 char message[30];
 int count = 0;
+int timerExtender = 0;
 
 /*-----------------------------------------------------------*/
 // Public API
@@ -132,7 +133,7 @@ uint8_t getValue(vtTempMsg *Buffer)
 	uint8_t i2cRoverMoveStop[] = {0x05, 0x00};
 
 	// REQUESTING DATA
-	uint8_t i2cRoverMotorData[] = {0x07, 0x00};
+	uint8_t i2cRoverMsgMotorLeftData[] = {RoverMsgMotorLeftData, 0x00};
 	uint8_t i2cRoverSensorFullData[] = {0x11, 0x00};
 
 	const uint8_t i2cCmdStartConvert[]= {0xEE};
@@ -343,23 +344,66 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			}
 			break;
 		}
+		case RoverMsgMotorLeftData: {
+
+			char str[20];
+		//	sprintf(str,"%d,%d,%d,%d,%d",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3]
+		//	, msgBuffer.buf[4]);//,msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9],msgBuffer.buf[10]);
+
+			int time = (msgBuffer.buf[1]*200); // in ms
+			int i;
+			int distance = 0;
+
+			for (i = 0; i < msgBuffer.buf[1] % 10; i++) {
+				if ( i < 8)
+					distance += msgBuffer.buf[i+2];
+			}
+
+			if ( time > 100000 ) {
+			 	time = 10000;
+			}
+			distance = distance*0.135;
+			int cmPerSec = distance/((float)time/1000);
+
+			sprintf(str,"%d,%dms%dcm%dc/s",msgBuffer.buf[0],time,distance,cmPerSec);
+			//sprintf(str,"testlol");
+		    // Print something on LCD
+			if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}	
+			
+			 break;
+		}
 		case TempMsgTypeTimer: {
 			// Timer messages never change the state, they just cause an action (or not) 
 			if ((currentState != fsmStateInit1Sent) && (currentState != fsmStateInit2Sent)) {
-
 				if (motorDataFlag) {
-					//count ++;
-					//i2cRoverMotorData[1] = count;
-					//if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMotorData),i2cRoverMotorData,10) != pdTRUE) {
-					//	VT_HANDLE_FATAL_ERROR(0);
-					//}
-					
-					i2cRoverSensorFullData[1] = getMsgCount();
-					insertCountDef(RoverMsgSensorAllData);
-					if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x4F,sizeof(i2cRoverSensorFullData),i2cRoverSensorFullData,10) != pdTRUE) {
-						VT_HANDLE_FATAL_ERROR(0);
+					if (timerExtender == 5) {
+						printf("MessageCount(Mtr): %d\n", getMsgCount());
+						i2cRoverMsgMotorLeftData[1] = getMsgCount();
+						insertCountDef(RoverMsgMotorLeftData);
+						if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x4F,sizeof(i2cRoverMsgMotorLeftData),i2cRoverMsgMotorLeftData,10) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
+						incrementMsgCount();
+						timerExtender = 0;
+					} else {
+						//count ++;
+						//i2cRoverMotorData[1] = count;
+						//if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMotorData),i2cRoverMotorData,10) != pdTRUE) {
+						//	VT_HANDLE_FATAL_ERROR(0);
+						//}
+	
+						printf("MessageCount(sensor): %d\n", getMsgCount());
+						i2cRoverSensorFullData[1] = getMsgCount();
+						insertCountDef(RoverMsgSensorAllData);
+						if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x4F,sizeof(i2cRoverSensorFullData),i2cRoverSensorFullData,10) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
+						incrementMsgCount();
+	
+						timerExtender++;
 					}
-					incrementMsgCount();
 				}
 
 				// Read in the values from the temperature sensor

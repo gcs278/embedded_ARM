@@ -73,6 +73,13 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	myNavStruct *navData = param->navData;
 	uint8_t recvMsgType;
 	int retransCount = 0;
+
+	// 255 will always be a bad message
+	countDefArray[255] = BadMsg;
+	uint8_t i;
+	for(i = 0; i < 255; i++) {
+		countDefArray[i] = CleanMsg;
+	}
 	// Like all good tasks, this should never exit
 	for(;;)
 	{
@@ -124,10 +131,19 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				retransCount ++;
 			}
 		} */
+		if ( recvMsgType == vtI2CMsgTypeTempInit ) {
+			SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
+		} else {
 		// Switch on the definition of the incoming count
 		switch(countDefArray[Buffer[0]]) {
 			case RoverMsgSensorAllData: {
+				printf("SensorData\n");
 				SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
+				break;
+			}
+			case RoverMsgMotorLeftData:	{
+				printf("MotorLeftData\n");
+				SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				break;
 			}
 			case 0xa5: {
@@ -135,7 +151,13 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				break;
 			}
 			case RoverMsgMotorLeft90: {
-				SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
+				printf("RoverData\n");
+				break;
+				// SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
+			}
+			case BadMsg: {
+				printf("Bad Message; Restart Pics\n");
+				break;
 			}
 		/*case vtI2CMsgTypeTempRead1: {
 				printf("1");
@@ -157,6 +179,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			break;
 		}		*/
 		default: {
+			printf("ConductDefault\n");
 			//SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
 			/*switch(recvMsgType) {
 				case vtI2CMsgTypeTempRead1: {
@@ -169,15 +192,23 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			} */
 			//VT_HANDLE_FATAL_ERROR(recvMsgType);
 			break;
+			}
 		}
 		}
 		countDefArray[Buffer[0]] = CleanMsg;
-		// Check to see if the last five have been retrieved
-		uint8_t i;
-		for (i = Buffer[0]-1; i > Buffer[0] - 5; i--) {
-			if ( countDefArray[i] == RoverMsgMotorLeft90 )
+		if ( countDefArray[Buffer[0]-3] == RoverMsgMotorLeft90 ) {
+				printf("Retrans of motor\n");
 				SendNavValueMsg(navData,0x89,Buffer,portMAX_DELAY);
 		}
+		// Check to see if the last five have been retrieved
+		/*uint8_t i;
+		for (i = Buffer[0]-1; i > Buffer[0] - 5; i--) {
+			printf("Buf Check: %d\n", i);
+			if ( countDefArray[i] == RoverMsgMotorLeft90 ) {
+				printf("Retrans of motor\n");
+				SendNavValueMsg(navData,0x89,Buffer,portMAX_DELAY);
+			}
+		}*/	
 
 
 	}
@@ -196,5 +227,8 @@ unsigned char getMsgCount() {
 }
 
 void incrementMsgCount() {
-	messageCount++;
+	if ( messageCount == 254 )
+		messageCount = 0;
+	else
+		messageCount ++;
 } 

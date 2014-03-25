@@ -146,11 +146,12 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 				}
 				distance = distance / (i+1);
 				printf("Distance: %d\n", distance);
-				if (distance < 30 && lastDistance < 30 && distance >1 && lastDistance > 1) {
+				if (distance < 9 && lastDistance < 9 && distance >1 && lastDistance > 1) {
 					printf("----sent90\n"); 
 					setRetrans();
 					insertCountDef(RoverMsgMotorLeft90);
 					i2cRoverMove90[1] = getMsgCount();
+					printf("MessageCount: %d\n", getMsgCount());
 					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMove90),i2cRoverMove90,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
