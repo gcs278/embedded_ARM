@@ -72,7 +72,6 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	vtTempStruct *tempData = param->tempData;
 	myNavStruct *navData = param->navData;
 	uint8_t recvMsgType;
-	int retransCount = 0;
 
 	// 255 will always be a bad message
 	countDefArray[255] = BadMsg;
@@ -121,18 +120,11 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		//   other Q/tasks for other message types
 		// This isn't a state machine, it is just acting as a router for messages
 		printf("New Message: %d\n",Buffer[0]);
-		/*if ( retrans ) {
-			printf("COUNTING RETRANS: %d\n", retransCount);
-			if ( retransCount == 5)    {
-				printf(" RETRANS\n");
-				SendNavValueMsg(navData,0x89,Buffer,portMAX_DELAY);
-				retransCount = 0;
-			} else {
-				retransCount ++;
-			}
-		} */
+		
+		// If it is the initialization message
 		if ( recvMsgType == vtI2CMsgTypeTempInit ) {
 			SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
+
 		} else {
 		// Switch on the definition of the incoming count
 		switch(countDefArray[Buffer[0]]) {
@@ -141,15 +133,16 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
 				break;
 			}
+			case RoverMsgSensorForwardRight: {
+				//SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
+				break;
+			}
 			case RoverMsgMotorLeftData:	{
 				printf("MotorLeftData\n");
 				SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				break;
 			}
-			case 0xa5: {
-				SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
-				break;
-			}
+
 			case RoverMsgMotorLeft90: {
 				printf("RoverData\n");
 				break;
@@ -195,7 +188,10 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			}
 		}
 		}
+		// Clear the count defition
 		countDefArray[Buffer[0]] = CleanMsg;
+
+		// Check if retransmission is needed
 		if ( countDefArray[Buffer[0]-3] == RoverMsgMotorLeft90 ) {
 				printf("Retrans of motor\n");
 				SendNavValueMsg(navData,0x89,Buffer,portMAX_DELAY);
@@ -212,10 +208,6 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 
 
 	}
-}
-
-void setRetrans() {
- 	retrans = 1;
 }
 
 void insertCountDef(unsigned char def) {

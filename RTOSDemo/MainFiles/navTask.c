@@ -148,7 +148,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 				printf("Distance: %d\n", distance);
 				if (distance < 9 && lastDistance < 9 && distance >1 && lastDistance > 1) {
 					printf("----sent90\n"); 
-					setRetrans();
+
 					insertCountDef(RoverMsgMotorLeft90);
 					i2cRoverMove90[1] = getMsgCount();
 					printf("MessageCount: %d\n", getMsgCount());

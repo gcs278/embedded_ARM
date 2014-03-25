@@ -12,9 +12,6 @@ typedef struct __ConductorStruct {
 	myNavStruct *navData;
 } vtConductorStruct;
 
-
-int retrans = 0;
-
 unsigned char countDefArray[256];
 // Public API
 //
@@ -27,8 +24,6 @@ unsigned char countDefArray[256];
 //   i2c: pointer to the data structure for an i2c task
 //   temperature: pointer to the data structure for an LCD task (may be NULL)
 void vStartConductorTask(vtConductorStruct *conductorData,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature, myNavStruct *navs);
-
-void setRetrans();
 
 void insertCountDef(unsigned char def);
 unsigned char getMsgCount();
