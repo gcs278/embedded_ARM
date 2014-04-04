@@ -131,6 +131,7 @@ uint8_t getValue(vtTempMsg *Buffer)
 	uint8_t i2cRoverMoveLeft[] = {0x03, 0x00};
 	uint8_t i2cRoverMoveBack[] = {0x04, 0x00};
 	uint8_t i2cRoverMoveStop[] = {0x05, 0x00};
+	uint8_t i2cBrightBlue[] = {'n', 0x00,0x00,0xff};
 
 	// REQUESTING DATA
 	uint8_t i2cRoverMsgMotorLeftData[] = {RoverMsgMotorLeftData, 0x00};
@@ -364,6 +365,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			}
 			distance = distance*0.135;
 			int cmPerSec = distance/((float)time/1000);
+			if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x09,sizeof(i2cBrightBlue),i2cBrightBlue,0) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 
 			sprintf(str,"%d,%dms%dcm%dc/s",msgBuffer.buf[0],time,distance,cmPerSec);
 			//sprintf(str,"testlol");
@@ -377,6 +381,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 		case TempMsgTypeTimer: {
 			// Timer messages never change the state, they just cause an action (or not) 
 			if ((currentState != fsmStateInit1Sent) && (currentState != fsmStateInit2Sent)) {
+			/*if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x09,sizeof(i2cBrightBlue),i2cBrightBlue,0) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}		 */
 				if (motorDataFlag) {
 					if (timerExtender == 5) {
 						printf("MessageCount(Mtr): %d\n", getMsgCount());

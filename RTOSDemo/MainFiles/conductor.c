@@ -173,6 +173,8 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		}		*/
 		default: {
 			printf("ConductDefault\n");
+			printf("Snding this to the nav\n");
+			SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
 			//SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
 			/*switch(recvMsgType) {
 				case vtI2CMsgTypeTempRead1: {
