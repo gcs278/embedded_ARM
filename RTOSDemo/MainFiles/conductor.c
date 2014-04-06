@@ -140,6 +140,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			case RoverMsgMotorLeftData:	{
 				printf("MotorLeftData\n");
 				SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
+				SendNavValueMsg(navData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				break;
 			}
 

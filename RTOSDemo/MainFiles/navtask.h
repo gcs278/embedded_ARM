@@ -21,6 +21,6 @@ void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI
 
 portBASE_TYPE SendNavValueMsg(myNavStruct *NavData, uint8_t msgType, uint8_t *value, portTickType ticksToBlock);
 
-//unint8_t myCommandRover();
+uint8_t myCommandRover(uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront, uint8_t sideBack, uint8_t lastCommand, uint8_t tickdata );
 
 #endif

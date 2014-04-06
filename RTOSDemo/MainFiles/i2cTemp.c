@@ -365,9 +365,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			}
 			distance = distance*0.135;
 			int cmPerSec = distance/((float)time/1000);
-			if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x09,sizeof(i2cBrightBlue),i2cBrightBlue,0) != pdTRUE) {
+			/*if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x09,sizeof(i2cBrightBlue),i2cBrightBlue,0) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
-						}
+						}		*/
 
 			sprintf(str,"%d,%dms%dcm%dc/s",msgBuffer.buf[0],time,distance,cmPerSec);
 			//sprintf(str,"testlol");
