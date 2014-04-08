@@ -65,6 +65,10 @@ void vStarti2cTempTask(vtTempStruct *params,unsigned portBASE_TYPE uxPriority, v
 	if ((params->inQ = xQueueCreate(vtTempQLen,sizeof(vtTempMsg))) == NULL) {
 		VT_HANDLE_FATAL_ERROR(0);
 	}
+	/* Create the semaphore used by the first two tasks. */
+	/*printf("Creat semaphore\n");
+		vSemaphoreCreateBinary( mapStruct.SEMForTotalDistance);
+	printf("done semaphore\n");*/
 	/* Start the task */
 	portBASE_TYPE retval;
 	params->dev = i2c;
@@ -184,6 +188,15 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 	// Like all good tasks, this should never exit
 	for(;;)
 	{
+		/*printf("take\n");
+		if( xSemaphoreTake( mapStruct.SEMForTotalDistance , 10 ) == pdPASS ) {
+				mapStruct.totalDistanceTraveled = 2;
+				if(	xSemaphoreGive( mapStruct.SEMForTotalDistance ) == pdFALSE )
+				{
+					printf("YOU DONE FUCKED UP A-AARON");
+				}
+				}
+		printf("Give\n");*/
 		if ( moveForwardFlag ) {
 			count += 1;
 			
@@ -333,6 +346,7 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 				currentState = fsmStateInit2Sent;
 				// Must wait 10ms after writing to the temperature sensor's configuration registers(per sensor data sheet)
 				vTaskDelay(10/portTICK_RATE_MS);
+				
 				// Tell it to start converting
 				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempInit,0x4F,sizeof(i2cCmdStartConvert),i2cCmdStartConvert,0) != pdTRUE) {
 					VT_HANDLE_FATAL_ERROR(0);
@@ -471,6 +485,8 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 					distance += msgBuffer.buf[i+2];
 			}
 			distance = distance / (i+1);
+
+			
 
 			sprintf(str,"%d,%dcm",msgBuffer.buf[0],msgBuffer.buf[2]);
 

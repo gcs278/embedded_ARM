@@ -152,7 +152,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 			break;
 		case RoverMsgMotorLeftData:
 			printf("MotorMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
-			currentCommand = myCommandRover(50, 50, 10, 10, lastCommand, msgBuffer.buf[2]);
+			currentCommand = myCommandRover(50, 50, 30, 30, lastCommand, msgBuffer.buf[2], 0);
 			if(currentCommand != lastCommand) {
 			if(currentCommand == 1 || currentCommand == 6 || currentCommand == 11){
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
@@ -193,7 +193,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 			
 			extender--;
 			if ( extender < 0 ) {
-				currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55);
+				currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
 				printf(" This is currentCommand :D %d\n",currentCommand);
 				if(currentCommand != lastCommand) {
 					// Move Command
@@ -319,7 +319,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 }
 
 // my rover move command
-uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront, uint8_t sideBack, uint8_t lastCommand, uint8_t tickdata) {
+uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront, uint8_t sideBack, uint8_t lastCommand, uint8_t tickdata, uint8_t data) {
 	float percentErrorFront = frontLeft - frontRight;
 	percentErrorFront = percentErrorFront / frontLeft;
 	float percentErrorSide = sideBack - sideFront;
@@ -335,7 +335,7 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 1) {
 			return 2;
 		}
-		else if(lastCommand == 2 && avgFront <= 10 && avgFront >= 1) {
+		else if(lastCommand == 2 && avgFront <= 10 && avgFront >= 1 && data == 1) {
 			return 3;
 		}
 		else if (lastCommand == 3 && tickdata == 0) {
@@ -350,10 +350,10 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 6) {
 			return 7;
 		}
-		else if (lastCommand == 7 && avgFront <= 10 && avgFront >= 1) {
+		else if (lastCommand == 7 && avgFront <= 10 && avgFront >= 1 && data == 1) {
 			return 3;
 		}
-		else if (lastCommand == 7 && avgSide >=30 && avgFront >=50) {
+		else if (lastCommand == 7 && avgSide >=30 && avgFront >=50 && data == 1) {
 			return 8;
 		}
 		else if(lastCommand == 8 && tickdata == 0) {
@@ -368,10 +368,10 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 11) {
 			return 12;
 		}
-		else if (lastCommand == 12 && avgSide <= 30) {
+		else if (lastCommand == 12 && avgSide <= 30 && data == 1) {
 			return 15;
 		}
-		else if (lastCommand == 15 && avgSide >= 30 && avgFront >= 50) {
+		else if (lastCommand == 15 && avgSide >= 30 && avgFront >= 50 && data == 1) {
 			return 13;
 		}
 		else if (lastCommand == 13 && tickdata == 0){
