@@ -121,6 +121,7 @@ You should read the note above.
 #include "myTimers.h"
 #include "conductor.h"
 #include "navtask.h"
+#include "lpc17xx_gpio.h"
 
 /* syscalls initialization -- *must* occur first */
 #include "syscalls.h"
@@ -209,6 +210,8 @@ int main( void )
 	/* MTJ: initialize syscalls -- *must* be first */
 	// syscalls.c contains the files upon which the standard (and portable) C libraries rely 
 	init_syscalls();
+
+	GPIO_SetDir(0, 0x78000, 1);
 
 	// Set up the LED ports and turn them off
 	vtInitLED();

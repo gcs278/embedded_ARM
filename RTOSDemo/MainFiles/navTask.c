@@ -8,6 +8,7 @@
 #include "task.h"
 #include "projdefs.h"
 #include "semphr.h"
+#include "lpc17xx_gpio.h"
 
 /* include files. */
 #include "vtUtilities.h"
@@ -167,7 +168,11 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 			
 			printf("MotorMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
 			currentCommand = myCommandRover(50, 50, 30, 30, lastCommand, msgBuffer.buf[2], 0);
+			GPIO_ClearValue(0,0x78000);
+			GPIO_SetValue(0, 0x60000);
 			if(currentCommand != lastCommand) {
+			GPIO_ClearValue(0,0x78000);
+			GPIO_SetValue(0, 0x68000);
 			if(currentCommand == 1 || currentCommand == 6 || currentCommand == 11){
 						sprintf(str,"G%d",msgBuffer.buf[2]);
 						//sprintf(str,"testlol");
@@ -228,6 +233,8 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 		case 0x11:
 			printf("NavMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
 			printf("Extender: %d\n",extender);
+			GPIO_ClearValue(0,0x78000);
+			GPIO_SetValue(0, 0x50000);
 			if(mapStruct.SEMForSensors != NULL)
 			{
 				if( xSemaphoreTake( mapStruct.SEMForSensors , 1 ) == pdPASS ) {
@@ -248,6 +255,8 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 				currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
 				printf(" This is currentCommand :D %d\n",currentCommand);
 				if(currentCommand != lastCommand) {
+					GPIO_ClearValue(0,0x78000);
+					GPIO_SetValue(0, 0x58000);
 					// Move Command
 					if(currentCommand == 1 || currentCommand == 6 || currentCommand == 11){
 						sprintf(str,"G%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);

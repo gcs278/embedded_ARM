@@ -17,6 +17,8 @@
 #include "conductor.h"
 #include "mywebmap.h"
 #include "navtask.h"
+#include "LPC17XX.h"
+#include "lpc17xx_gpio.h"
 
 /* *********************************************** */
 // definitions and data structures that are private to this file
@@ -130,6 +132,8 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		switch(countDefArray[Buffer[0]]) {
 			case RoverMsgSensorAllData: {
 				printf("SensorData\n");
+				GPIO_ClearValue(0,0x78000);
+				GPIO_SetValue(0, 0x48000);
 				SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
 				break;
 			}
@@ -139,6 +143,8 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			}
 			case RoverMsgMotorLeftData:	{
 				printf("MotorLeftData\n");
+				GPIO_ClearValue(0,0x78000);
+				GPIO_SetValue(0, 0x40000);
 				SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				SendNavValueMsg(navData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				break;

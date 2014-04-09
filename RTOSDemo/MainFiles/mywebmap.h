@@ -23,11 +23,20 @@ struct myMapWebVars {
 	int sensor2;
 	int sensor3;
 	int sensor4;
+	int deciSeconds;
+	int seconds;
+	int min;
+	int timerFlag;
 	xSemaphoreHandle SEMForTotalDistance;
 	xSemaphoreHandle SEMForSensors;
 
 	//int testStruct;
 	int testVar;
 } mapStruct;
+
+typedef struct wallStruct{
+	int length;
+	int direction;
+} wall;
 
 #endif
