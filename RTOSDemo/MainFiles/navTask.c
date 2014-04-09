@@ -17,6 +17,7 @@
 #include "I2CTaskMsgTypes.h"
 #include "navtask.h"
 #include "conductor.h"
+#include "mywebmap.h"
 /* *********************************************** */
 // definitions and data structures that are private to this file
 
@@ -48,14 +49,18 @@ typedef struct __myNavMsg
 // The Nav task
 static portTASK_FUNCTION_PROTO( myNavUpdateTask, pvParameters );
 
-void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c)
+void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,  vtLCDStruct *lcd)
 {
+	mapStruct.SEMForSensors = NULL;
+	// create the semaphore
+	mapStruct.SEMForSensors = xSemaphoreCreateMutex();
  	if ((NavData->inQ = xQueueCreate(myNavQLen,sizeof(myNavMsg))) == NULL) {
 		VT_HANDLE_FATAL_ERROR(0);
 	}
 /* Start the task */
 	portBASE_TYPE retval;
 	NavData->dev = i2c;
+	NavData->lcdData = lcd;
 	if ((retval = xTaskCreate( myNavUpdateTask, ( signed char * ) "Navigation", navSTACK_SIZE, (void *) NavData, uxPriority, ( xTaskHandle * ) NULL )) != pdPASS) {
 		VT_HANDLE_FATAL_ERROR(retval);
 	}
@@ -95,10 +100,17 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	myNavStruct *param = (myNavStruct *) pvParameters;
 	// Get the I2C device pointer
 	vtI2CStruct *devPtr = param->dev;
+	// Get the LCD information pointer
+	vtLCDStruct *lcdData = param->lcdData;
 	// Get the sensor data
 	myNavMsg msgBuffer;
 	//flag
 	uint8_t startNav = 0;
+
+	mapStruct.sensor1 = 0;
+	mapStruct.sensor2 = 0;
+	mapStruct.sensor3 = 0;
+	mapStruct.sensor4 = 0;
 
 	int lastDistance = 0; // The last distance calculated
 
@@ -118,6 +130,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	uint8_t i2cRoverMoveR90[] = {0x2f, 0x33};
 	uint8_t i2cRoverMsgMotorRight2[] = {RoverMsgMotorLeft2, 0x00};
 	uint8_t i2cBrightRed[] = {'n', 0x00,0xff,0x00}; 
+	char str[20];
 
 	for(;;)
 	{
@@ -151,10 +164,17 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 			incrementMsgCount();
 			break;
 		case RoverMsgMotorLeftData:
+			
 			printf("MotorMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
 			currentCommand = myCommandRover(50, 50, 30, 30, lastCommand, msgBuffer.buf[2], 0);
 			if(currentCommand != lastCommand) {
 			if(currentCommand == 1 || currentCommand == 6 || currentCommand == 11){
+						sprintf(str,"G%d",msgBuffer.buf[2]);
+						//sprintf(str,"testlol");
+		    			// Print something on LCD
+						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
@@ -162,6 +182,12 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					}
 					// Stop Command
 					else if(currentCommand == 3 || currentCommand == 5 || currentCommand == 0|| currentCommand == 8 || currentCommand == 10 || currentCommand == 13){
+						sprintf(str,"S%d",msgBuffer.buf[2]);
+						//sprintf(str,"testlol");
+		    			// Print something on LCD
+						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverStop),i2cRoverStop,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
@@ -169,12 +195,24 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					}
 					// Rigth Command
 					else if(currentCommand == 9 || currentCommand == 14) {
+						sprintf(str,"R%d",msgBuffer.buf[2]);
+						//sprintf(str,"testlol");
+		    			// Print something on LCD
+						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveR90),i2cRoverMoveR90,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
 						}
 					}
 					else if( currentCommand == 4) {
+						sprintf(str,"L%d",msgBuffer.buf[2]);
+						//sprintf(str,"testlol");
+		    			// Print something on LCD
+						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMove90),i2cRoverMove90,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
@@ -190,7 +228,21 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 		case 0x11:
 			printf("NavMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
 			printf("Extender: %d\n",extender);
-			
+			if(mapStruct.SEMForSensors != NULL)
+			{
+				if( xSemaphoreTake( mapStruct.SEMForSensors , 1 ) == pdPASS ) {
+					mapStruct.sensor1 = msgBuffer.buf[2];
+					mapStruct.sensor2 = msgBuffer.buf[3];
+					mapStruct.sensor3 = msgBuffer.buf[4];
+					mapStruct.sensor4 = msgBuffer.buf[5];
+					printf("take\n");
+						if(	xSemaphoreGive( mapStruct.SEMForSensors ) == pdFALSE )
+						{
+							printf("YOU DONE FUCKED UP A-AARON");
+						}
+					}
+					printf("Give\n");
+			}
 			extender--;
 			if ( extender < 0 ) {
 				currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
@@ -198,6 +250,12 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 				if(currentCommand != lastCommand) {
 					// Move Command
 					if(currentCommand == 1 || currentCommand == 6 || currentCommand == 11){
+						sprintf(str,"G%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
+						//sprintf(str,"testlol");
+		    			// Print something on LCD
+						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
@@ -205,6 +263,12 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					}
 					// Stop Command
 					else if(currentCommand == 3 || currentCommand == 5 || currentCommand == 0|| currentCommand == 8 || currentCommand == 10 || currentCommand == 13){
+						sprintf(str,"S%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
+						//sprintf(str,"testlol");
+		    			// Print something on LCD
+						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverStop),i2cRoverStop,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
@@ -212,12 +276,24 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					}
 					// Rigth Command
 					else if(currentCommand == 9 || currentCommand == 14) {
+						sprintf(str,"R%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
+						//sprintf(str,"testlol");
+		    			// Print something on LCD
+						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveR90),i2cRoverMoveR90,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
 						}
 					}
 					else if( currentCommand == 4) {
+						sprintf(str,"L%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
+						//sprintf(str,"testlol");
+		    			// Print something on LCD
+						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMove90),i2cRoverMove90,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);

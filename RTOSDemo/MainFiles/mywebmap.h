@@ -19,7 +19,12 @@ struct myMapWebVars {
 	int myMapArray [10][10];
 	char *myOutputSting;
 	int totalDistanceTraveled;
-	//xSemaphoreHandle SEMForTotalDistance;
+	int sensor1;
+	int sensor2;
+	int sensor3;
+	int sensor4;
+	xSemaphoreHandle SEMForTotalDistance;
+	xSemaphoreHandle SEMForSensors;
 
 	//int testStruct;
 	int testVar;

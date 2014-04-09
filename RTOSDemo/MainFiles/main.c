@@ -266,7 +266,7 @@ int main( void )
 	// Here we set up a timer that will send messages to the Temperature sensing task.  The timer will determine how often the sensor is sampled
 	startTimerForTemperature(&tempSensorData);
 
-	myStartNavTask(&navData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0);
+	myStartNavTask(&navData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0, &vtLCDdata);
 	// start up a "conductor" task that will move messages around
 	vStartConductorTask(&conductorData,mainCONDUCTOR_TASK_PRIORITY,&vtI2C0,&tempSensorData, &navData);
 	#endif
