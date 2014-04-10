@@ -50,6 +50,8 @@
 #include "httpd.h"
 #include "httpd-cgi.h"
 #include "httpd-fs.h"
+//that my bitch
+#include "mywebmap.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -99,6 +101,7 @@ generate_file_stats(void *arg)
 static
 PT_THREAD(file_stats(struct httpd_state *s, char *ptr))
 {
+	//vSemaphoreCreateBinary( mapStruct.SEMForTotalDistance);
   PSOCK_BEGIN(&s->sout);
 
   PSOCK_GENERATOR_SEND(&s->sout, generate_file_stats, strchr(ptr, ' ') + 1);
@@ -110,16 +113,90 @@ static unsigned short
 generate_test_out(void *arg)
 {
 	// Outputs two buttons, start and stop
-	char data[600] = "<button type=\"submit\" name=\"run\" value=\"1\">START</button>";
+	char *mybuff[1000];
+	char *mybuff2[100];
+	char *mybuff3[10];
+	char *mybuff4[100];
+	char *mybuff5[100];
+	char data[1500] = "<button type=\"submit\" name=\"run\" value=\"1\">START</button>";
 	strcat(data, "<button type=\"submit\" name=\"run\" value=\"0\">STOP</button>");
 	strcat(data, "<button type=\"submit\" name=\"run\" value=\"2\">LEFT</button>");
 	strcat(data, "<button type=\"submit\" name=\"run\" value=\"3\">RIGHT</button>");
 	strcat(data, "<dr><button type=\"submit\" name=\"run\" value=\"4\">FIRST RUN</button>");
 	strcat(data, "<button type=\"submit\" name=\"run\" value=\"5\">START MAPPING</button>");
-	strcat(data, "<button type=\"submit\" name=\"run\" value=\"6\">USE MAPPING</button>");	
-  	sprintf(uip_appdata,data);
+	strcat(data, "<button type=\"submit\" name=\"run\" value=\"6\">USE MAPPING</button>");
+	snprintf(mybuff3,sizeof(mybuff3), "%d",  mapStruct.deciSeconds );
+	snprintf(mybuff4,sizeof(mybuff4), "%d:",  mapStruct.seconds );
+	snprintf(mybuff5,sizeof(mybuff5), "%d:",  mapStruct.min );
+	strcat(data, "<br>Elaspe Time :" ); 
+	strcat(data, mybuff5);
+	strcat(data, mybuff4);
+	strcat(data, mybuff3);
+	strcat(data, "\n" );	 
+	//strcat(data, "DATA :");
+	//printf("SEMAPHORE TIME\n");
+	if( mapStruct.SEMForTotalDistance != NULL){
+		if( xSemaphoreTake( mapStruct.SEMForTotalDistance , 10 ) == pdPASS ) {
+		//	printf("DEEP INSIDE");
+			strcat(data, "<br> Total Distance traveled : ");
+			snprintf(mybuff,sizeof(mybuff), "%d",  mapStruct.totalDistanceTraveled );
+			//printf("%d",mapStruct.totalDistanceTraveled);
+			strcat(data, mybuff);
+			strcat(data, "<br>");
+			//snprintf(mybuff2,sizeof(mybuff2), "%d",  mapStruct.sensor1);
+			//strcat(data, mybuff2);
+			//sprintf(uip_appdata,data);
+			if(	xSemaphoreGive( mapStruct.SEMForTotalDistance ) == pdFALSE )
+				{
+					//printf("YOU DONE FUCKED UP MARTIN");
+				}
+		//	printf("GIVE IT AWAY NOW");
+		//return strlen(uip_appdata);
+		}
+	}
+	if(mapStruct.SEMForSensors != NULL)
+			{
+				if( xSemaphoreTake( mapStruct.SEMForSensors , 1 ) == pdPASS ) {
+					strcat(data, "<br> Sensors 1: ");
+					//snprintf(mybuff2,sizeof(mybuff2), "%d,%d,%d,%d",  mapStruct.sensor1,mapStruct.sensor2,mapStruct.sensor3,mapStruct.sensor4 );
+					//printf("take\n");
+					snprintf(mybuff2,sizeof(mybuff2), "%d",  mapStruct.sensor1);
+					strcat(data, mybuff2);
+					strcat(data, "<br>");
+					strcat(data, "<br> Sensors 2: ");
+					//snprintf(mybuff2,sizeof(mybuff2), "%d,%d,%d,%d",  mapStruct.sensor1,mapStruct.sensor2,mapStruct.sensor3,mapStruct.sensor4 );
+					//printf("take\n");
+					snprintf(mybuff2,sizeof(mybuff2), "%d",  mapStruct.sensor2);
+					strcat(data, mybuff2);
+					strcat(data, "<br>");
+					strcat(data, "<br> Sensors 3: ");
+					//snprintf(mybuff2,sizeof(mybuff2), "%d,%d,%d,%d",  mapStruct.sensor1,mapStruct.sensor2,mapStruct.sensor3,mapStruct.sensor4 );
+					//printf("take\n");
+					snprintf(mybuff2,sizeof(mybuff2), "%d",  mapStruct.sensor3);
+					strcat(data, mybuff2);
+					strcat(data, "<br>");
+					strcat(data, "<br> Sensors 4 : ");
+					//snprintf(mybuff2,sizeof(mybuff2), "%d,%d,%d,%d",  mapStruct.sensor1,mapStruct.sensor2,mapStruct.sensor3,mapStruct.sensor4 );
+					//printf("take\n");
+					snprintf(mybuff2,sizeof(mybuff2), "%d",  mapStruct.sensor4);
+					strcat(data, mybuff2);
+					strcat(data, "<br>");
+						if(	xSemaphoreGive( mapStruct.SEMForSensors ) == pdFALSE )
+						{
+							//printf("YOU DONE FUCKED UP A-AARON");
+						}
+					}
+					//printf("Give\n");
+			} 
+	/*else{
+	    printf("NOPE");	
+  		sprintf(uip_appdata,data);
+		return strlen(uip_appdata);
+	}*/
+	sprintf(uip_appdata,data);
+	return strlen(uip_appdata);
 
-  return strlen(uip_appdata);
+  
 }
 static
 PT_THREAD(test_out(struct httpd_state *s, char *ptr))

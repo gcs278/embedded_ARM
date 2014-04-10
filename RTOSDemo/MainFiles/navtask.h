@@ -11,16 +11,17 @@
 //   pass the structure as an argument to the API calls
 typedef struct __NavStruct {
 	vtI2CStruct *dev; //sound like a good idea
+	vtLCDStruct *lcdData;
 	xQueueHandle inQ;
 } myNavStruct;
 
 #define myNavMaxLen   10
 
 // start the task
-void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c);
+void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c, vtLCDStruct *lcd);
 
 portBASE_TYPE SendNavValueMsg(myNavStruct *NavData, uint8_t msgType, uint8_t *value, portTickType ticksToBlock);
 
-//unint8_t myCommandRover();
+uint8_t myCommandRover(uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront, uint8_t sideBack, uint8_t lastCommand, uint8_t tickdata, uint8_t data );
 
 #endif

@@ -74,6 +74,7 @@
 #include "i2ctemp.h"
 #include "I2CTaskMsgTypes.h"
 #include "Messages.h"
+#include "mywebmap.h"
 
 /*-----------------------------------------------------------*/
 
@@ -299,9 +300,11 @@ extern void vParTestSetLEDState( long lState );
 			vParTestSetLEDState( pdTRUE );
 		}
 		else if (!strcmp( c, "?run=4" ) ) {
+			mapStruct.timerFlag =1;
 			startGettingMotor("DATASTART");
 		}
 		else if ( !strcmp( c, "?run=5" ) ) {
+			mapStruct.timerFlag =0;
 			stopGettingMotor("DATASTOP");
 		}
 		else if ( !strcmp( c, "?run=6" ) ) {

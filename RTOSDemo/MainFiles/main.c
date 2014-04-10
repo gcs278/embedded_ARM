@@ -121,6 +121,7 @@ You should read the note above.
 #include "myTimers.h"
 #include "conductor.h"
 #include "navtask.h"
+#include "lpc17xx_gpio.h"
 
 /* syscalls initialization -- *must* occur first */
 #include "syscalls.h"
@@ -210,6 +211,8 @@ int main( void )
 	// syscalls.c contains the files upon which the standard (and portable) C libraries rely 
 	init_syscalls();
 
+	GPIO_SetDir(0, 0x78000, 1);
+
 	// Set up the LED ports and turn them off
 	vtInitLED();
 
@@ -266,7 +269,7 @@ int main( void )
 	// Here we set up a timer that will send messages to the Temperature sensing task.  The timer will determine how often the sensor is sampled
 	startTimerForTemperature(&tempSensorData);
 
-	myStartNavTask(&navData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0);
+	myStartNavTask(&navData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0, &vtLCDdata);
 	// start up a "conductor" task that will move messages around
 	vStartConductorTask(&conductorData,mainCONDUCTOR_TASK_PRIORITY,&vtI2C0,&tempSensorData, &navData);
 	#endif

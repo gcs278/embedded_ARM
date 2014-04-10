@@ -61,10 +61,15 @@ int timerExtender = 0;
 // Public API
 void vStarti2cTempTask(vtTempStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtLCDStruct *lcd)
 {
+    mapStruct.SEMForTotalDistance = NULL;
 	// Create the queue that will be used to talk to this task
 	if ((params->inQ = xQueueCreate(vtTempQLen,sizeof(vtTempMsg))) == NULL) {
 		VT_HANDLE_FATAL_ERROR(0);
 	}
+	/* Create the semaphore used by the first two tasks. */
+	printf("Creat semaphore\n");
+	mapStruct.SEMForTotalDistance = xSemaphoreCreateMutex();
+	printf("done semaphore\n");
 	/* Start the task */
 	portBASE_TYPE retval;
 	params->dev = i2c;
@@ -170,6 +175,7 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 	// Buffer for receiving messages
 	vtTempMsg msgBuffer;
 	uint8_t currentState;
+	mapStruct.totalDistanceTraveled = 0;
 
 	// Assumes that the I2C device (and thread) have already been initialized
 
@@ -184,6 +190,8 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 	// Like all good tasks, this should never exit
 	for(;;)
 	{
+		//printf("take\n");
+		//printf("Give\n");
 		if ( moveForwardFlag ) {
 			count += 1;
 			
@@ -333,6 +341,7 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 				currentState = fsmStateInit2Sent;
 				// Must wait 10ms after writing to the temperature sensor's configuration registers(per sensor data sheet)
 				vTaskDelay(10/portTICK_RATE_MS);
+				
 				// Tell it to start converting
 				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempInit,0x4F,sizeof(i2cCmdStartConvert),i2cCmdStartConvert,0) != pdTRUE) {
 					VT_HANDLE_FATAL_ERROR(0);
@@ -364,10 +373,22 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			 	time = 10000;
 			}
 			distance = distance*0.135;
+			if(mapStruct.SEMForTotalDistance != NULL)
+		{
+			if( xSemaphoreTake( mapStruct.SEMForTotalDistance , 1 ) == pdPASS ) {
+				mapStruct.totalDistanceTraveled = mapStruct.totalDistanceTraveled + distance;
+				printf("take\n");
+					if(	xSemaphoreGive( mapStruct.SEMForTotalDistance ) == pdFALSE )
+					{
+						printf("YOU DONE FUCKED UP A-AARON");
+					}
+				}
+				printf("Give\n");
+		}
 			int cmPerSec = distance/((float)time/1000);
-			if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x09,sizeof(i2cBrightBlue),i2cBrightBlue,0) != pdTRUE) {
+			/*if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x09,sizeof(i2cBrightBlue),i2cBrightBlue,0) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
-						}
+						}		*/
 
 			sprintf(str,"%d,%dms%dcm%dc/s",msgBuffer.buf[0],time,distance,cmPerSec);
 			//sprintf(str,"testlol");
@@ -471,6 +492,8 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 					distance += msgBuffer.buf[i+2];
 			}
 			distance = distance / (i+1);
+
+			
 
 			sprintf(str,"%d,%dcm",msgBuffer.buf[0],msgBuffer.buf[2]);
 

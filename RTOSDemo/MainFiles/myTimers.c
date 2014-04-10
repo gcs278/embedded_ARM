@@ -8,6 +8,7 @@
 #include "vtUtilities.h"
 #include "LCDtask.h"
 #include "myTimers.h"
+#include "mywebmap.h"
 
 /* **************************************************************** */
 // WARNING: Do not print in this file -- the stack is not large enough for this task
@@ -24,6 +25,17 @@
 //   Sends a message to the queue that is read by the LCD Task
 void LCDTimerCallback(xTimerHandle pxTimer)
 {
+	if(mapStruct.timerFlag == 1) {
+		mapStruct.deciSeconds = mapStruct.deciSeconds +1;
+		if(mapStruct.deciSeconds == 10) {
+			mapStruct.deciSeconds = 0;
+			mapStruct.seconds= mapStruct.seconds +1;	
+		}
+		if(mapStruct.deciSeconds == 60) {
+			mapStruct.seconds = 0;
+			mapStruct.min= mapStruct.min +1;
+		}
+	}
 	if (pxTimer == NULL) {
 		VT_HANDLE_FATAL_ERROR(0);
 	} else {

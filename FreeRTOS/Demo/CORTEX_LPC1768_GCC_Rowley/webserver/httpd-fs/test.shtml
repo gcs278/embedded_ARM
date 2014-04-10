@@ -2,8 +2,9 @@
 <html>
   <head>
     <title>FreeRTOS.org uIP WEB server demo</title>
+	<meta http-equiv="refresh" content="30">
   </head>
-  <body>
+  <body onload ="show();">
 <font face="arial">
 <a href="index.shtml">Task Stats</a> <b>|</b> <a href="runtime.shtml">Run Time Stats</a> <b>|</b> <a href="stats.shtml">TCP Stats</a> <b>|</b> <a href="tcp.shtml">Connections</a> <b>|</b> <a href="http://www.freertos.org/">FreeRTOS.org Homepage</a> <b>|</b> <a href="io.shtml">IO</a><b>|</b><a href="test.shtml">CONTROLS</a><b>|</b><a href="map.shtml">MAPP</a>
 <br><p>
@@ -13,7 +14,7 @@
 <p>
 
 DEBUGGING CONTROLLER
-
+<div> Elaspe time: <span id="time"></span></div>
 <p>
 <form name="aForm" action="/test.shtml" method="get">
 %! test
@@ -26,14 +27,115 @@ DEBUGGING CONTROLLER
 </html>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 <script>
+	//	Simple example of using private variables
+//
+//	To start the stopwatch:
+//		obj.start();
+//
+//	To get the duration in milliseconds without pausing / resuming:
+//		var	x = obj.time();
+//
+//	To pause the stopwatch:
+//		var	x = obj.stop();	// Result is duration in milliseconds
+//
+//	To resume a paused stopwatch
+//		var	x = obj.start();	// Result is duration in milliseconds
+//
+//	To reset a paused stopwatch
+//		obj.stop();
+//
+var	clsStopwatch = function() {
+		// Private vars
+		var	startAt	= 0;	// Time of last start / resume. (0 if not running)
+		var	lapTime	= 0;	// Time on the clock when last stopped in milliseconds
+ 
+		var	now	= function() {
+				return (new Date()).getTime(); 
+			}; 
+ 
+		// Public methods
+		// Start or resume
+		this.start = function() {
+				startAt	= startAt ? startAt : now();
+			};
+ 
+		// Stop or pause
+		this.stop = function() {
+				// If running, update elapsed time otherwise keep it
+				lapTime	= startAt ? lapTime + now() - startAt : lapTime;
+				startAt	= 0; // Paused
+			};
+ 
+		// Reset
+		this.reset = function() {
+				lapTime = startAt = 0;
+			};
+ 
+		// Duration
+		this.time = function() {
+				return lapTime + (startAt ? now() - startAt : 0); 
+			};
+	};
+ 
+var x = new clsStopwatch();
+var $time;
+var clocktimer;
+ //setTimeout(time, 20);
+ 
+function pad(num, size) {
+	var s = "0000" + num;
+	return s.substr(s.length - size);
+}
+ 
+function formatTime(time) {
+	var h = m = s = ms = 0;
+	var newTime = '';
+ 
+	h = Math.floor( time / (60 * 60 * 1000) );
+	time = time % (60 * 60 * 1000);
+	m = Math.floor( time / (60 * 1000) );
+	time = time % (60 * 1000);
+	s = Math.floor( time / 1000 );
+	ms = time % 1000;
+ 
+	newTime = pad(h, 2) + ':' + pad(m, 2) + ':' + pad(s, 2) + ':' + pad(ms, 3);
+	return newTime;
+}
+
+function show() {
+	$time = document.getElementById('time');
+	update();
+}
+ 
+function update() {
+	$time.innerHTML = formatTime(x.time());
+}
+ 
+function start() {
+	clocktimer = setInterval("update()", 1);
+	x.start();
+}
+ 
+function stop() {
+	x.stop();
+	clearInterval(clocktimer);
+}
+ 
+function reset() {
+	stop();
+	x.reset();
+	update();
+}
 		jQuery(document).ready(function($) {
 		$('body').keydown(function(evt) {
 		    switch(evt.keyCode) {
 		    	case 82: // R - run data collection
 		    		$.get("?run=4");
+		    		start();
 		    		break;
 		    	case 83: // S - stop data collection
 		    		$.get("?run=5");
+		    		stop();
 		    		break;
 
 		        case 37: // left
