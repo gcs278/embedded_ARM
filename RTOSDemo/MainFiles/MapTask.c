@@ -17,6 +17,7 @@
 #include "I2CTaskMsgTypes.h"
 #include "maptask.h"
 #include "conductor.h"
+#include "messages.h"
 /* *********************************************** */
 // definitions and data structures that are private to this file
 
@@ -75,7 +76,11 @@ portBASE_TYPE SendMapValueMsg(myMapStruct *Data, uint8_t msgType, uint8_t* value
 		// no room for this message
 		VT_HANDLE_FATAL_ERROR(tempBuffer.length);
 	}
-	memcpy(tempBuffer.buf,(char *)&value,sizeof(value));
+	int i;
+	for (i=0; i<10; i++) {
+	 	tempBuffer.buf[i] = value[i];
+	}
+	//memcpy(tempBuffer.buf,(char *)&value,sizeof(value));
 	tempBuffer.msgType = msgType;
 	return(xQueueSend(Data->inQ,(void *) (&tempBuffer),ticksToBlock));
 }
@@ -92,23 +97,37 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 	// Get the sensor data
 	myMapMsg msgBuffer;
 	uint8_t i2cRoverMoveForward[] = {0x01, 0x00};
+	printf("Starting map task for loop!\n");
+	int total_len = 0;
 	for(;;)
 	{
-		if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
-			VT_HANDLE_FATAL_ERROR(0);
-		} 
-		// Wait for a message from conductor
-		//if (xQueueReceive(param->inQ,(void *) &msgBuffer,portMAX_DELAY) != pdTRUE) {
+		///if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
 		//	VT_HANDLE_FATAL_ERROR(0);
-		//}
-		switch(getMsgType(&msgBuffer)) {
-		case 0x11:
-		{
-			printf("Received sensor data!\n");
+		//} 
+		// Wait for a message from conductor
+		if (xQueueReceive(param->inQ,(void *) &msgBuffer,portMAX_DELAY) != pdTRUE) {
+			VT_HANDLE_FATAL_ERROR(0);
 		}
-		case 0x0B:
+		//printf("Received an XQUEUE message!\n");
+		
+		switch(getMsgType(&msgBuffer)) {
+		case RoverMsgSensorAllData:
 		{
-			printf("Received right sensor data!\n");
+			//printf("MotorMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
+			//printf("Received sensor data!\n");
+			break;
+		}
+		case RoverMsgMotorLeftData:
+		{
+			//printf("MotorMessageMap:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
+			total_len = total_len + msgBuffer.buf[2];
+			printf("Total motor left data: %d\n", total_len);
+			break;
+		}
+		default:
+		{
+			printf("Received default msg!\n");
+			break;
 		}
 		}
 	}

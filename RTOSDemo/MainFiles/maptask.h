@@ -4,7 +4,7 @@
 #ifndef MAP_TASK_H
 #define MAP_TASK_H
 
-#define myMapMaxLen   (sizeof(portTickType))
+#define myMapMaxLen   10
 
 // Define a data structure that is used to pass and hold parameters for this task
 // Functions that use the API should not directly access this structure, but rather simply

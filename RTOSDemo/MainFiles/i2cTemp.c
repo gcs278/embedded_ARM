@@ -377,13 +377,13 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 		{
 			if( xSemaphoreTake( mapStruct.SEMForTotalDistance , 1 ) == pdPASS ) {
 				mapStruct.totalDistanceTraveled = mapStruct.totalDistanceTraveled + distance;
-				printf("take\n");
+				//printf("take\n");
 					if(	xSemaphoreGive( mapStruct.SEMForTotalDistance ) == pdFALSE )
 					{
 						printf("YOU DONE FUCKED UP A-AARON");
 					}
 				}
-				printf("Give\n");
+				//printf("Give\n");
 		}
 			int cmPerSec = distance/((float)time/1000);
 			/*if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x09,sizeof(i2cBrightBlue),i2cBrightBlue,0) != pdTRUE) {

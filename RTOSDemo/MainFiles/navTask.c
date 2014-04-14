@@ -145,7 +145,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 		}
 		switch(getMsgType(&msgBuffer)) {
 		case navI2CMsgTypeRead:
-			printf(" navStart\n");
+			//printf(" navStart\n");
 			startNav = 1;
 			break;
 		case 0x89:
@@ -166,7 +166,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 			break;
 		case RoverMsgMotorLeftData:
 			
-			printf("MotorMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
+			//printf("MotorMessageNav:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
 			currentCommand = myCommandRover(50, 50, 30, 30, lastCommand, msgBuffer.buf[2], 0);
 			GPIO_ClearValue(0,0x78000);
 			GPIO_SetValue(0, 0x60000);
@@ -228,11 +228,11 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					}
 					}
 					lastCommand = currentCommand;
-			printf(" This is currentCommand :D %d\n",currentCommand);
+			//printf(" This is currentCommand :D %d\n",currentCommand);
 			break;		 
 		case 0x11:
-			printf("NavMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
-			printf("Extender: %d\n",extender);
+			//printf("NavMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
+			//printf("Extender: %d\n",extender);
 			GPIO_ClearValue(0,0x78000);
 			GPIO_SetValue(0, 0x50000);
 			if(mapStruct.SEMForSensors != NULL)
@@ -242,18 +242,18 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					mapStruct.sensor2 = msgBuffer.buf[3];
 					mapStruct.sensor3 = msgBuffer.buf[4];
 					mapStruct.sensor4 = msgBuffer.buf[5];
-					printf("take\n");
+					//printf("take\n");
 						if(	xSemaphoreGive( mapStruct.SEMForSensors ) == pdFALSE )
 						{
 							printf("YOU DONE FUCKED UP A-AARON");
 						}
 					}
-					printf("Give\n");
+					//printf("Give\n");
 			}
 			extender--;
 			if ( extender < 0 ) {
 				currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
-				printf(" This is currentCommand :D %d\n",currentCommand);
+				//printf(" This is currentCommand :D %d\n",currentCommand);
 				if(currentCommand != lastCommand) {
 					GPIO_ClearValue(0,0x78000);
 					GPIO_SetValue(0, 0x58000);

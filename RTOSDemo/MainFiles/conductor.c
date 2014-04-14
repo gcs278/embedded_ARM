@@ -17,6 +17,7 @@
 #include "conductor.h"
 #include "mywebmap.h"
 #include "navtask.h"
+#include "maptask.h"
 #include "LPC17XX.h"
 #include "lpc17xx_gpio.h"
 
@@ -45,13 +46,14 @@ static portTASK_FUNCTION_PROTO( vConductorUpdateTask, pvParameters );
 
 /*-----------------------------------------------------------*/
 // Public API
-void vStartConductorTask(vtConductorStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature, myNavStruct *navs)
+void vStartConductorTask(vtConductorStruct *params,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature, myNavStruct *navs, myMapStruct *maps)
 {
 	/* Start the task */
 	portBASE_TYPE retval;
 	params->dev = i2c;
 	params->tempData = temperature;
 	params->navData = navs;
+	params->mapData = maps;
 	if ((retval = xTaskCreate( vConductorUpdateTask, ( signed char * ) "Conductor", conSTACK_SIZE, (void *) params, uxPriority, ( xTaskHandle * ) NULL )) != pdPASS) {
 		VT_HANDLE_FATAL_ERROR(retval);
 	}
@@ -73,6 +75,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	// Get the LCD information pointer
 	vtTempStruct *tempData = param->tempData;
 	myNavStruct *navData = param->navData;
+	myMapStruct *mapData = param->mapData;
 	uint8_t recvMsgType;
 
 	// 255 will always be a bad message
@@ -131,9 +134,10 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		// Switch on the definition of the incoming count
 		switch(countDefArray[Buffer[0]]) {
 			case RoverMsgSensorAllData: {
-				printf("SensorData\n");
+				//printf("SensorData\n");
 				GPIO_ClearValue(0,0x78000);
 				GPIO_SetValue(0, 0x48000);
+				SendMapValueMsg(mapData,RoverMsgSensorAllData, Buffer, portMAX_DELAY);
 				SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
 				break;
 			}
@@ -142,11 +146,12 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				break;
 			}
 			case RoverMsgMotorLeftData:	{
-				printf("MotorLeftData\n");
+				//printf("MotorLeftData\n");
 				GPIO_ClearValue(0,0x78000);
 				GPIO_SetValue(0, 0x40000);
 				SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				SendNavValueMsg(navData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
+				SendMapValueMsg(mapData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				break;
 			}
 
@@ -180,8 +185,9 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		}		*/
 		default: {
 			printf("ConductDefault\n");
-			printf("Snding this to the nav\n");
+			//printf("Snding this to the nav\n");
 			SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
+			SendMapValueMsg(mapData,0x11,Buffer,portMAX_DELAY);
 			//SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
 			/*switch(recvMsgType) {
 				case vtI2CMsgTypeTempRead1: {
