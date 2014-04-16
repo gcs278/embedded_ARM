@@ -264,10 +264,6 @@ extern void vParTestSetLEDState( long lState );
 	c = strstr( pcInputString, "?" );
     if( c )
     {
-
-
-
-
 		/* Turn the FIO1 LED's on or off in accordance with the check box status. */
 		if( !strcmp( c, "?run=1" ) )
 		{
@@ -317,7 +313,7 @@ extern void vParTestSetLEDState( long lState );
 			}
 		}
 		else if ( !strcmp( c, "?run=8" )) {
-		   	uint8_t i2cRoverMoveBack[] = {RoverMsgMotorRight2, 0x00};
+		   	uint8_t i2cRoverMoveBack[] = {RoverMsgMotorForwardCMDelim, 0x00};
 			if (vtI2CEnQ(roverComm->i2cStruct,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveBack),i2cRoverMoveBack,10) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
 			}
@@ -354,6 +350,42 @@ extern void vParTestSetLEDState( long lState );
 		}
 		else if ( !strcmp( c, "?run=14" )) {
 		   	uint8_t i2cRoverMoveBack[] = {RoverMsgMotorRight10, 0x00};
+			if (vtI2CEnQ(roverComm->i2cStruct,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveBack),i2cRoverMoveBack,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+		}
+		else if ( !strcmp( c, "?speed=0" )) {
+		   	uint8_t i2cRoverMoveBack[] = {RoverMsgMotorSpeedCreepin, 0x00};
+			if (vtI2CEnQ(roverComm->i2cStruct,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveBack),i2cRoverMoveBack,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+		}
+		else if ( !strcmp( c, "?speed=1" )) {
+		   	uint8_t i2cRoverMoveBack[] = {RoverMsgMotorSpeedSlow, 0x00};
+			if (vtI2CEnQ(roverComm->i2cStruct,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveBack),i2cRoverMoveBack,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+		}
+		else if ( !strcmp( c, "?speed=2" )) {
+		   	uint8_t i2cRoverMoveBack[] = {RoverMsgMotorSpeedMedium, 0x00};
+			if (vtI2CEnQ(roverComm->i2cStruct,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveBack),i2cRoverMoveBack,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+		}
+		else if ( !strcmp( c, "?speed=3" )) {
+		   	uint8_t i2cRoverMoveBack[] = {RoverMsgMotorSpeedMediumFast, 0x00};
+			if (vtI2CEnQ(roverComm->i2cStruct,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveBack),i2cRoverMoveBack,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+		}
+		else if ( !strcmp( c, "?speed=4" )) {
+		   	uint8_t i2cRoverMoveBack[] = {RoverMsgMotorSpeedFastBRAH, 0x00};
+			if (vtI2CEnQ(roverComm->i2cStruct,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveBack),i2cRoverMoveBack,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+		}
+		else if ( !strcmp( c, "?wall=0" )) {
+		   	uint8_t i2cRoverMoveBack[] = {RoverMsgTurnOffWallTracking, 0x00};
 			if (vtI2CEnQ(roverComm->i2cStruct,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveBack),i2cRoverMoveBack,10) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
 			}

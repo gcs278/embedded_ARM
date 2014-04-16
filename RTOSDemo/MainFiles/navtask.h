@@ -14,7 +14,7 @@ typedef struct __NavStruct {
 	xQueueHandle inQ;
 } myNavStruct;
 
-#define myNavMaxLen   (sizeof(portTickType))
+#define myNavMaxLen   10
 
 // start the task
 void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c);

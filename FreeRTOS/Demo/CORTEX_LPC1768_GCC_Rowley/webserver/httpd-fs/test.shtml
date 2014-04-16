@@ -62,7 +62,7 @@ DEBUGGING CONTROLLER
 		        		$.get( "?run=10");
 		            break;
 
-	        	case 50: // down
+	        	case 50: // downn
 		        	if (evt.shiftKey) // shift + down == back up
 		        		$.get("?run=7");
 		        	else
@@ -76,11 +76,27 @@ DEBUGGING CONTROLLER
 		        		$.get( "?run=12");
 		            break;
 
-		        case 52: // down
-		        	if (evt.shiftKey) // shift + down == back up
-		        		$.get("?run=13");
-		        	else
-		        		$.get( "?run=14");
+		        case 90: // z
+		        	$.get( "?speed=0");
+		            break;
+
+		        case 88: // x
+		        	$.get( "?speed=1");
+		            break;
+
+	            case 67: // c
+		        	$.get( "?speed=2");
+		            break;
+
+	            case 86: // v
+		        	$.get( "?speed=3");
+		            break;
+
+		        case 66: // b
+		        	$.get( "?speed=4");
+		            break;
+		        case 87: // w
+		        	$.get( "?wall=0");
 		            break;
 		    };
 		});    
