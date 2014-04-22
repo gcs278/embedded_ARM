@@ -208,9 +208,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 		//	}
 
 			// Print something on LCD
-			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+			/*if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
-			}
+			} */
 			moveForwardFlag = 0;
 		}
 		if ( moveStopFlag ) {
@@ -224,9 +224,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			}
 
 			// Print something on LCD
-			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+			/*if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
-			}
+			}*/
 			moveStopFlag = 0;
 		}
 
@@ -241,9 +241,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			}
 
 			// Print something on LCD
-			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+			/*if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
-			}
+			} */
 			moveBackFlag = 0;
 		}
 
@@ -258,9 +258,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			}
 
 			// Print something on LCD
-			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+			/*if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
-			}
+			} */
 			moveLeftFlag = 0;
 		}
 
@@ -275,9 +275,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			}
 
 			// Print something on LCD
-			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+			/*if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
-			}
+			} */
 			moveRightFlag = 0;
 		}
 		if ( moveUseFlag ) {
@@ -291,9 +291,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			//}
 
 			// Print something on LCD
-			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+			/*if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
-			}
+			} */
 			moveUseFlag = 0;
 		}
 		if ( moveStartFlag ) {
@@ -307,9 +307,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			//}
 
 			// Print something on LCD
-			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+			/*if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
-			}
+			} */
 			moveStartFlag = 0;
 		}
 		if ( moveMapFlag ) {
@@ -323,9 +323,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			//}
 
 			// Print something on LCD
-			if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
+			/*if (SendLCDPrintMsg(lcdData,strnlen(message,vtLCDMaxLen),message,portMAX_DELAY) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
-			}
+			} */
 			moveMapFlag = 0;
 		}
 
@@ -380,7 +380,7 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 				printf("take\n");
 					if(	xSemaphoreGive( mapStruct.SEMForTotalDistance ) == pdFALSE )
 					{
-						printf("YOU DONE FUCKED UP A-AARON");
+						printf("YOU DONE FKED UP A-AARON");
 					}
 				}
 				printf("Give\n");
@@ -581,27 +581,27 @@ void moveForward(char* msg) {
    
 	strcpy(message, msg);
 	moveForwardFlag = 1;
-	mapStruct.testVar = 0;
+	//mapStruct.testVar = 0;
 	
 }
 
 void moveStop(char* msg) {
 	strcpy(message, msg);
 	moveStopFlag = 1;
-	mapStruct.testVar = 1;
+	//mapStruct.testVar = 1;
 }
 
 void moveRight(char* msg) {
 	strcpy(message, msg);
 	moveRightFlag = 1;
-	mapStruct.testVar = 0;
+	//mapStruct.testVar = 0;
 	
 }
 
 void moveLeft(char* msg) {
 	strcpy(message, msg);
 	moveLeftFlag = 1;
-	mapStruct.testVar = 0;
+	//mapStruct.testVar = 0;
 }
 
 void moveBack(char* msg) {
@@ -621,15 +621,15 @@ void stopGettingMotor(char* msg) {
 void moveStart(char* msg) {
 	strcpy(message, msg);
 	moveStartFlag = 1;
-	mapStruct.testVar = 0;
+	//mapStruct.testVar = 0;
 }
 void moveMap(char* msg) {
 	strcpy(message, msg);
 	moveMapFlag = 1;
-	mapStruct.testVar = 0;
+	//mapStruct.testVar = 0;
 }
 void moveUse(char* msg) {
 	strcpy(message, msg);
 	moveUseFlag = 1;
-	mapStruct.testVar = 0;
+	//mapStruct.testVar = 0;
 }

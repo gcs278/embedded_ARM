@@ -31,7 +31,7 @@ void LCDTimerCallback(xTimerHandle pxTimer)
 			mapStruct.deciSeconds = 0;
 			mapStruct.seconds= mapStruct.seconds +1;	
 		}
-		if(mapStruct.deciSeconds == 60) {
+		if(mapStruct.seconds == 60) {
 			mapStruct.seconds = 0;
 			mapStruct.min= mapStruct.min +1;
 		}

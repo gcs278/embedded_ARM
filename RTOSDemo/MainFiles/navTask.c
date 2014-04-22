@@ -130,7 +130,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	uint8_t i2cRoverMove90[] = {0x24, 0x33};
 	uint8_t i2cRoverMoveR90[] = {0x2f, 0x33};
 	uint8_t i2cRoverMsgMotorRight2[] = {RoverMsgMotorLeft2, 0x00};
-	uint8_t i2cBrightRed[] = {'n', 0x00,0xff,0x00}; 
+	//uint8_t i2cBrightRed[] = {'n', 0x00,0xff,0x00}; 
 	char str[20];
 
 	for(;;)
@@ -353,7 +353,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 		//	}
 		}
 			break;
-		case RoverMsgSensorRightForward:
+		case RoverMsgSensorRightForward: {
 			printf("NavMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
 			printf("Extender: %d\n",extender);
 			extender--;
@@ -390,6 +390,8 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 				lastSideDistance = sideDistance;
 		//	}
 		}
+		break;
+		}
 
 		default: {
 			printf("  navDefault\n");
@@ -420,7 +422,7 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 1) {
 			return 2;
 		}
-		else if(lastCommand == 2 && avgFront <= 10 && avgFront >= 1 && data == 1) {
+		else if(lastCommand == 2 && avgFront <= 60 && avgFront >= 1 && data == 1) {
 			return 3;
 		}
 		else if (lastCommand == 3 && tickdata == 0) {
@@ -435,10 +437,10 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 6) {
 			return 7;
 		}
-		else if (lastCommand == 7 && avgFront <= 10 && avgFront >= 1 && data == 1) {
+		else if (lastCommand == 7 && avgFront <= 50 && avgFront >= 1 && data == 1) {
 			return 3;
 		}
-		else if (lastCommand == 7 && avgSide >=30 && avgFront >=50 && data == 1) {
+		else if (lastCommand == 7 && avgSide >=100 && avgFront >=100 && data == 1) {
 			return 8;
 		}
 		else if(lastCommand == 8 && tickdata == 0) {
@@ -453,10 +455,10 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 11) {
 			return 12;
 		}
-		else if (lastCommand == 12 && avgSide <= 30 && data == 1) {
+		else if (lastCommand == 12 && avgSide <= 50 && data == 1) {
 			return 15;
 		}
-		else if (lastCommand == 15 && avgSide >= 30 && avgFront >= 50 && data == 1) {
+		else if (lastCommand == 15 && avgSide >= 100 && avgFront >= 100 && data == 1) {
 			return 13;
 		}
 		else if (lastCommand == 13 && tickdata == 0){

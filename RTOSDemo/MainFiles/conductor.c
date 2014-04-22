@@ -95,7 +95,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			{1,1,1,1,0,0,0,0,0,0,0,1},
 			{0,0,0,1,0,0,0,0,1,1,1,1},
 			{0,0,0,1,1,1,1,1,1,0,0,0}};		   */
-			int hi =0;
+			/*int hi =0;
 			int hj=0;
 			for (hi=0; hi<10 ; hi++) {
 				for ( hj=0; hj<10; hj++){
@@ -111,7 +111,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 					}
 					//}
 				}
-			} 
+			} */
 		// Wait for a message from an I2C operation
 		if (vtI2CDeQ(devPtr,vtI2CMLen,Buffer,&rxLen,&recvMsgType,&status) != pdTRUE) {
 			VT_HANDLE_FATAL_ERROR(0);
@@ -180,8 +180,8 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		}		*/
 		default: {
 			printf("ConductDefault\n");
-			printf("Snding this to the nav\n");
-			SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
+			//printf("Snding this to the nav\n");
+			//SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
 			//SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
 			/*switch(recvMsgType) {
 				case vtI2CMsgTypeTempRead1: {
