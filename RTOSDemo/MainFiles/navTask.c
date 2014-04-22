@@ -103,10 +103,11 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	int lastDistance = 0; // The last distance calculated
 
 	int extender = 0; // For extending the time between right turns
-	
+	int moveExtend = 0;
 	unsigned char messageCount = 0;
 
 	uint8_t i2cRoverMoveForward[] = {RoverMsgMotorForward, 0x00};
+    uint8_t i2cRoverMoveForward50[] = {0xC7, 0x00};
 	uint8_t i2cRoverMove90[] = {RoverMsgMotorLeft90, 0x33};
 	uint8_t i2cRoverMoveLeft2[] = {RoverMsgMotorLeft2, 0x00};
 	uint8_t i2cRoverMoveRight2[] = {RoverMsgMotorRight2, 0x00};
@@ -156,18 +157,29 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 				}
 				distance = distance / (i+1);	*/
 				printf("FrontDistance: %d\n", frontDistance);
-			 if (frontDistance < 50 && lastDistance < 50 && frontDistance >1 && lastDistance > 1) {
+
+				if ( moveExtend == 1 ) {
+					incrementMsgCount();
+					insertCountDef(0xC7);
+					i2cRoverMoveForward50[1] = getMsgCount();
+					printf("MessageCount: %d\n", getMsgCount());
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward50),i2cRoverMoveForward50,10) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					} 	 
+					incrementMsgCount();
+					moveExtend=0;
+				}
+			 if (frontDistance < 60 && lastDistance < 60 && frontDistance >1 && lastDistance > 1) {
 					printf("----sent90\n"); 
 
 					insertCountDef(RoverMsgMotorLeft90);
 					i2cRoverMove90[1] = getMsgCount();
 					printf("MessageCount: %d\n", getMsgCount());
 					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMove90),i2cRoverMove90,10) != pdTRUE) {
-						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
 					} 	 
-					incrementMsgCount();
 					extender = 15;
+					moveExtend=1 ;
 				}
 				else {
 					//printf("----sentMove\n");
