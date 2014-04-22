@@ -171,7 +171,11 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 		case RoverMsgMotorLeftData:
 			
 			printf("MotorMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
-			currentCommand = myCommandRover(50, 50, 30, 30, lastCommand, msgBuffer.buf[2], 0);
+			if (msgBuffer.buf[1] != 0 ) {
+				currentCommand = myCommandRover(50, 50, 30, 30, lastCommand, msgBuffer.buf[2], 0);
+				printf(" This is currentCommand :D %d\n",currentCommand);
+			}
+			
 			GPIO_ClearValue(0,0x78000);
 			GPIO_SetValue(0, 0x60000);
 			if(currentCommand != lastCommand) {
@@ -232,7 +236,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					}
 					}
 					lastCommand = currentCommand;
-			printf(" This is currentCommand :D %d\n",currentCommand);
+			//printf(" This is currentCommand :D %d\n",currentCommand);
 			break;
 		// Navigatation for incoming sensor data		 
 		case 0x11:
@@ -259,8 +263,12 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 
 			extender--;
 			if ( extender < 0 ) {
-				currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
-				printf(" This is currentCommand :D %d\n",currentCommand);
+				if (msgBuffer.buf[1] != 0 ) {
+					currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
+					printf(" This is currentCommand :D %d\n",currentCommand);
+				}
+				//currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
+				
 
 				if(currentCommand != lastCommand) {
 					GPIO_ClearValue(0,0x78000);
@@ -461,6 +469,9 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 	avgFront = avgFront / 2;
 	unsigned int avgSide = sideBack + sideFront;
 	avgSide = avgSide / 2;
+	printf("INSIDE %d,%d,%d,%d\n",frontRight,frontLeft,sideFront,sideBack);
+	printf("AVG FRONT %d\n",avgFront);
+	printf("AVG SIDE %d\n",avgSide);
 	if( percentErrorSide <= .02 && percentErrorSide >= -.02 && percentErrorSide <= .02 && percentErrorSide >= -.02){
 		if (lastCommand == 0 && tickdata == 0) {
 			return 1;
@@ -468,7 +479,7 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 1) {
 			return 2;
 		}
-		else if(lastCommand == 2 && avgFront <= 60 && avgFront >= 1 && data == 1) {
+		else if(lastCommand == 2 && avgFront <= 70 && avgFront >= 1 && data == 1) {
 			return 3;
 		}
 		else if (lastCommand == 3 && tickdata == 0) {
@@ -483,7 +494,7 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 6) {
 			return 7;
 		}
-		else if (lastCommand == 7 && avgFront <= 50 && avgFront >= 1 && data == 1) {
+		else if (lastCommand == 7 && avgFront <= 70 && avgFront >= 1 && data == 1) {
 			return 3;
 		}
 		else if (lastCommand == 7 && avgSide >=100 && avgFront >=100 && data == 1) {
