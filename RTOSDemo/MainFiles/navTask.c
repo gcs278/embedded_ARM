@@ -160,9 +160,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 			incrementMsgCount();
 			break;
 		case 0x90:
+
 			insertCountDef(RoverMsgMotorRight2);
-			i2cRoverMsgMotorRight2[1] = getMsgCount();
-		  	if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMsgMotorRight2),i2cRoverMsgMotorRight2,10) != pdTRUE) {
+			i2cRoverMoveRight2[1] = getMsgCount();
+		  	if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveRight2),i2cRoverMoveRight2,10) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
 			}
 			incrementMsgCount();
@@ -232,12 +233,14 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					}
 					lastCommand = currentCommand;
 			printf(" This is currentCommand :D %d\n",currentCommand);
-			break;		 
+			break;
+		// Navigatation for incoming sensor data		 
 		case 0x11:
 			printf("NavMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
 			printf("Extender: %d\n",extender);
 			GPIO_ClearValue(0,0x78000);
 			GPIO_SetValue(0, 0x50000);
+
 			if(mapStruct.SEMForSensors != NULL)
 			{
 				if( xSemaphoreTake( mapStruct.SEMForSensors , 1 ) == pdPASS ) {
@@ -253,10 +256,12 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					}
 					printf("Give\n");
 			}
+
 			extender--;
 			if ( extender < 0 ) {
 				currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
 				printf(" This is currentCommand :D %d\n",currentCommand);
+
 				if(currentCommand != lastCommand) {
 					GPIO_ClearValue(0,0x78000);
 					GPIO_SetValue(0, 0x58000);
@@ -264,14 +269,19 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					if(currentCommand == 1 || currentCommand == 6 || currentCommand == 11){
 						sprintf(str,"G%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
 						//sprintf(str,"testlol");
+
 		    			// Print something on LCD
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
+						
+						insertCountDef(i2cRoverMoveForward[0]);
+						i2cRoverMoveForward[1] = getMsgCount();
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
-						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
-						VT_HANDLE_FATAL_ERROR(0);
-						}	
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+							VT_HANDLE_FATAL_ERROR(0);
+						}
+						incrementMsgCount();	
 					}
 					// Stop Command
 					else if(currentCommand == 3 || currentCommand == 5 || currentCommand == 0|| currentCommand == 8 || currentCommand == 10 || currentCommand == 13){
@@ -281,11 +291,16 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
+						
+						insertCountDef(i2cRoverStop[0]);
+						i2cRoverStop[1] = getMsgCount();
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverStop),i2cRoverStop,10) != pdTRUE) {
-						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
-						VT_HANDLE_FATAL_ERROR(0);
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+							VT_HANDLE_FATAL_ERROR(0);
 						}
+						incrementMsgCount();
 					}
+
 					// Rigth Command
 					else if(currentCommand == 9 || currentCommand == 14) {
 						sprintf(str,"R%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
@@ -294,10 +309,14 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
+
+						insertCountDef(i2cRoverMoveR90[0]);
+						i2cRoverMoveR90[1] = getMsgCount();
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveR90),i2cRoverMoveR90,10) != pdTRUE) {
-						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
-						VT_HANDLE_FATAL_ERROR(0);
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+							VT_HANDLE_FATAL_ERROR(0);
 						}
+						incrementMsgCount();
 					}
 					else if( currentCommand == 4) {
 						sprintf(str,"L%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
@@ -306,10 +325,14 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
+
+						insertCountDef(i2cRoverMove90[0]);
+						i2cRoverMove90[1] = getMsgCount();
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMove90),i2cRoverMove90,10) != pdTRUE) {
-						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
-						VT_HANDLE_FATAL_ERROR(0);
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+							VT_HANDLE_FATAL_ERROR(0);
 						}
+						incrementMsgCount();
 					}
 					else {
 					//do nothing
@@ -335,9 +358,9 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					distance += msgBuffer.buf[i+2];
 				}
 				distance = distance / (i+1);	*/
-				printf("FrontDistance: %d\n", frontDistance);
+				//printf("FrontDistance: %d\n", frontDistance);
 
-				if ( moveExtend == 1 ) {
+			/*	if ( moveExtend == 1 ) {
 					incrementMsgCount();
 					insertCountDef(0xC7);
 					i2cRoverMoveForward50[1] = getMsgCount();
@@ -375,6 +398,8 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 		//	}
 		}
 			break;
+
+/*----------------- GRANT's OLD CODE FOR PRELIM ------------------------------------------------------------
 		case RoverMsgSensorRightForward: {
 			printf("NavMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
 			printf("Extender: %d\n",extender);
@@ -407,12 +432,12 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
 					} */
-				}
-				lastDistance = frontDistance;
+			//	}
+			//	lastDistance = frontDistance;
 		//	}
-		}
-		break;
-		}
+	//	}
+	//	break;
+//		}
 
 		default: {
 			printf("  navDefault\n");
