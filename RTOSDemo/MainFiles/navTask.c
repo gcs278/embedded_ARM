@@ -122,16 +122,19 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	uint8_t currentCommand = 0;	
 
 	int extender = 0; // For extending the time between right turns
-	
+	int moveExtend = 0;
 	unsigned char messageCount = 0;
 
-	uint8_t i2cRoverMoveForward[] = {0x01, 0x00};
+
 	uint8_t i2cRoverStop[] = {0x05, 0x00};
-	uint8_t i2cRoverMove90[] = {0x24, 0x33};
 	uint8_t i2cRoverMoveR90[] = {0x2f, 0x33};
-	uint8_t i2cRoverMsgMotorRight2[] = {RoverMsgMotorLeft2, 0x00};
 	//uint8_t i2cBrightRed[] = {'n', 0x00,0xff,0x00}; 
 	char str[20];
+	uint8_t i2cRoverMoveForward[] = {RoverMsgMotorForward, 0x00};
+    uint8_t i2cRoverMoveForward50[] = {0xC7, 0x00};
+	uint8_t i2cRoverMove90[] = {RoverMsgMotorLeft90, 0x33};
+	uint8_t i2cRoverMoveLeft2[] = {RoverMsgMotorLeft2, 0x00};
+	uint8_t i2cRoverMoveRight2[] = {RoverMsgMotorRight2, 0x00};
 
 	for(;;)
 	{
@@ -318,15 +321,34 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 				lastCommand = currentCommand; 			
 			//if(startNav == 1) {
 				/*int i;
-				int distance = 0;
-				for (i = 0; i < msgBuffer.buf[1] % 10; i++) {
+				int frontDistance = 0;
+				if (msgBuffer.buf[1] >= 4 && msgBuffer.buf[2] != 0xFF && msgBuffer.buf[3] != 0xFF ) {
+					frontDistance = msgBuffer.buf[2]+msgBuffer.buf[3];
+					frontDistance = frontDistance/2;
+					//sideDistance = msgBuffer.buf[4];
+					//sideDistance += msgBuffer.buf[5];
+					//sideDistance = sideDistance/2;
+				}
+
+			/*r	for (i = 0; i < msgBuffer.buf[1] % 10; i++) {
 					if ( i < 8)
 					distance += msgBuffer.buf[i+2];
 				}
-				distance = distance / (i+1);
-				printf("Distance: %d\n", distance);
-				if (distance < 20 && lastDistance < 20 && distance >1 && lastDistance > 1) {
-				//if (distance < 500) {
+				distance = distance / (i+1);	*/
+				printf("FrontDistance: %d\n", frontDistance);
+
+				if ( moveExtend == 1 ) {
+					incrementMsgCount();
+					insertCountDef(0xC7);
+					i2cRoverMoveForward50[1] = getMsgCount();
+					printf("MessageCount: %d\n", getMsgCount());
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward50),i2cRoverMoveForward50,10) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					} 	 
+					incrementMsgCount();
+					moveExtend=0;
+				}
+			 if (frontDistance < 60 && lastDistance < 60 && frontDistance >1 && lastDistance > 1) {
 					printf("----sent90\n"); 
 
 					insertCountDef(RoverMsgMotorLeft90);
@@ -374,11 +396,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 					i2cRoverMsgMotorRight2[1] = getMsgCount();
 					printf("MessageCount: %d\n", getMsgCount());
 					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMsgMotorRight2),i2cRoverMsgMotorRight2,10) != pdTRUE) {
-						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
 					} 	 
-					incrementMsgCount();
 					extender = 15;
+					moveExtend=1 ;
 				}
 				else {
 					//printf("----sentMove\n");
@@ -387,7 +408,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						VT_HANDLE_FATAL_ERROR(0);
 					} */
 				}
-				lastSideDistance = sideDistance;
+				lastDistance = frontDistance;
 		//	}
 		}
 		break;
