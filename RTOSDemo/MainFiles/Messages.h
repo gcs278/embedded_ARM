@@ -43,6 +43,7 @@
 #define RoverMsgMotorRight15 0x29
 #define RoverMsgMotorRight90 0x2F
 
+#define RoverMsgTurnOnWallTracking 0x0E
 #define RoverMsgTurnOffWallTracking 0x0F
 
 // Speed Modes

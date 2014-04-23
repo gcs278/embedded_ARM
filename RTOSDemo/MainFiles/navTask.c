@@ -191,6 +191,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
+						}
+						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOnWallTracking),RoverMsgTurnOnWallTracking,10) != pdTRUE) {
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+							VT_HANDLE_FATAL_ERROR(0);
 						}	
 					}
 					// Stop Command
@@ -199,6 +203,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						//sprintf(str,"testlol");
 		    			// Print something on LCD
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+							VT_HANDLE_FATAL_ERROR(0);
+						}
+						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOffWallTracking),RoverMsgTurnOffWallTracking,10) != pdTRUE) {
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
 						}
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverStop),i2cRoverStop,10) != pdTRUE) {
@@ -289,6 +297,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
 						}
+						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOnWallTracking),RoverMsgTurnOnWallTracking,10) != pdTRUE) {
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 						incrementMsgCount();	
 					}
 					// Stop Command
@@ -296,6 +308,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						sprintf(str,"S%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
 						//sprintf(str,"testlol");
 		    			// Print something on LCD
+						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOffWallTracking),RoverMsgTurnOffWallTracking,10) != pdTRUE) {
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+							VT_HANDLE_FATAL_ERROR(0);
+						}
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
@@ -472,32 +488,39 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 	printf("INSIDE %d,%d,%d,%d\n",frontRight,frontLeft,sideFront,sideBack);
 	printf("AVG FRONT %d\n",avgFront);
 	printf("AVG SIDE %d\n",avgSide);
-	if( percentErrorSide <= .02 && percentErrorSide >= -.02 && percentErrorSide <= .02 && percentErrorSide >= -.02){
-		if (lastCommand == 0 && tickdata == 0) {
+	//if( percentErrorFront <= .02 && percentErrorFront >= -.02 && percentErrorSide <= .02 && percentErrorSide >= -.02){
+		if (lastCommand == 0 && tickdata == 0) { // off
 			return 1;
 		}
-		else if (lastCommand == 1) {
+		else if (lastCommand == 1) {// on
 			return 2;
 		}
-		else if(lastCommand == 2 && avgFront <= 70 && avgFront >= 1 && data == 1) {
+		//off
+		else if(lastCommand == 2 && avgFront <= 70 && avgFront >= 1 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02) {
 			return 3;
 		}
+		//off
 		else if (lastCommand == 3 && tickdata == 0) {
 			return 4;
 		}
+		//off
 		else if (lastCommand == 4 && tickdata == 0 ) {
 			return 5;
 		}
+		//off
 		else if (lastCommand == 5 && tickdata == 0) {
 			return 6;
 		}
+		//off
 		else if (lastCommand == 6) {
 			return 7;
 		}
-		else if (lastCommand == 7 && avgFront <= 70 && avgFront >= 1 && data == 1) {
+		//on
+		else if (lastCommand == 7 && avgFront <= 70 && avgFront >= 1 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02) {
 			return 3;
 		}
-		else if (lastCommand == 7 && avgSide >=100 && avgFront >=100 && data == 1) {
+		//off
+		else if (lastCommand == 7 && avgSide >=100 && avgFront >=100 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02 && percentErrorSide <= .02 && percentErrorSide >= -.02) {
 			return 8;
 		}
 		else if(lastCommand == 8 && tickdata == 0) {
@@ -512,10 +535,10 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 11) {
 			return 12;
 		}
-		else if (lastCommand == 12 && avgSide <= 50 && data == 1) {
+		else if (lastCommand == 12 && avgSide <= 50 && data == 1 && percentErrorSide <= .02 && percentErrorSide >= -.02) {
 			return 15;
 		}
-		else if (lastCommand == 15 && avgSide >= 100 && avgFront >= 100 && data == 1) {
+		else if (lastCommand == 15 && avgSide >= 100 && data == 1 && percentErrorSide <= .02 && percentErrorSide >= -.02) {
 			return 13;
 		}
 		else if (lastCommand == 13 && tickdata == 0){
@@ -527,9 +550,9 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else {
 			return lastCommand;
 		}
-	}
-	else {
+	//}
+	/*else {
 		return lastCommand;
-	}
+	} */
 
 }

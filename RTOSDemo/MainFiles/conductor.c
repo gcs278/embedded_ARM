@@ -145,7 +145,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				printf("MotorLeftData\n");
 				GPIO_ClearValue(0,0x78000);
 				GPIO_SetValue(0, 0x40000);
-				SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
+				//SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				SendNavValueMsg(navData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				break;
 			}
