@@ -135,6 +135,9 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	uint8_t i2cRoverMove90[] = {RoverMsgMotorLeft90, 0x33};
 	uint8_t i2cRoverMoveLeft2[] = {RoverMsgMotorLeft2, 0x00};
 	uint8_t i2cRoverMoveRight2[] = {RoverMsgMotorRight2, 0x00};
+	uint8_t i2cRoverOnCorrection[] = {RoverMsgTurnOnWallTracking, 0x00};
+	uint8_t i2cRoverOffCorrection[] = {RoverMsgTurnOffWallTracking, 0x00};
+	uint8_t move5cm[] = {0x39, 0x00};
 
 	for(;;)
 	{
@@ -171,79 +174,135 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 		case RoverMsgMotorLeftData:
 			
 			printf("MotorMessage:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
-			if (msgBuffer.buf[1] != 0 ) {
-				currentCommand = myCommandRover(50, 50, 30, 30, lastCommand, msgBuffer.buf[2], 0);
-				printf(" This is currentCommand :D %d\n",currentCommand);
+			// REStop Command
+			if(msgBuffer.buf[2] != 0 && (currentCommand == 3 || currentCommand == 5 || currentCommand == 0|| currentCommand == 8 || currentCommand == 10 || currentCommand == 13 ) ){
+				sprintf(str,"RES%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
+				//sprintf(str,"testlol");
+		    	// Print something on LCD
+				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverOffCorrection),i2cRoverOffCorrection,10) != pdTRUE) {
+					printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+					VT_HANDLE_FATAL_ERROR(0);
+				}
+				if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+					VT_HANDLE_FATAL_ERROR(0);
+				}
+				
+				insertCountDef(i2cRoverStop[0]);
+				i2cRoverStop[1] = getMsgCount();
+				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverStop),i2cRoverStop,10) != pdTRUE) {
+					printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+					VT_HANDLE_FATAL_ERROR(0);
+				}
+				incrementMsgCount();
 			}
-			
-			GPIO_ClearValue(0,0x78000);
-			GPIO_SetValue(0, 0x60000);
-			if(currentCommand != lastCommand) {
-			GPIO_ClearValue(0,0x78000);
-			GPIO_SetValue(0, 0x68000);
-			if(currentCommand == 1 || currentCommand == 6 || currentCommand == 11){
-						sprintf(str,"G%d",msgBuffer.buf[2]);
-						//sprintf(str,"testlol");
-		    			// Print something on LCD
-						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
-							VT_HANDLE_FATAL_ERROR(0);
-						}
-						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
+			// if it didn't stop resend stop and check again
+			else {
+
+				if (msgBuffer.buf[1] > 3 ) {
+					currentCommand = myCommandRover(50, 50, 30, 30, lastCommand, msgBuffer.buf[2], 0);
+					printf(" This is currentCommand :D %d\n",currentCommand);
+				}
+				
+				GPIO_ClearValue(0,0x78000);
+				GPIO_SetValue(0, 0x60000);
+				// resend move if not moving
+				if ( msgBuffer.buf[2] == 0 && (currentCommand == 2 || currentCommand == 7 || currentCommand == 12 )) {
+					sprintf(str,"RESEND%d",msgBuffer.buf[2]);
+					//sprintf(str,"testlol");
+			    	// Print something on LCD
+					if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					}
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
-						}
-						/*if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOnWallTracking),RoverMsgTurnOnWallTracking,10) != pdTRUE) {
+					}
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverOnCorrection),i2cRoverOnCorrection,10) != pdTRUE) {
+						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+						VT_HANDLE_FATAL_ERROR(0);
+					}	
+				}
+				
+				if(currentCommand != lastCommand) {
+				GPIO_ClearValue(0,0x78000);
+				GPIO_SetValue(0, 0x68000);
+				if(currentCommand == 1 || currentCommand == 6 || currentCommand == 11){
+							sprintf(str,"G%d",msgBuffer.buf[2]);
+							//sprintf(str,"testlol");
+			    			// Print something on LCD
+							if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+								VT_HANDLE_FATAL_ERROR(0);
+							}
+							if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
-						}*/	
-					}
-					// Stop Command
-					else if(currentCommand == 3 || currentCommand == 5 || currentCommand == 0|| currentCommand == 8 || currentCommand == 10 || currentCommand == 13){
-						sprintf(str,"S%d",msgBuffer.buf[2]);
-						//sprintf(str,"testlol");
-		    			// Print something on LCD
-						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
-							VT_HANDLE_FATAL_ERROR(0);
-						}
-						/*if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOffWallTracking),RoverMsgTurnOffWallTracking,10) != pdTRUE) {
+							}
+							if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverOnCorrection),i2cRoverOnCorrection,10) != pdTRUE) {
+								printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+								VT_HANDLE_FATAL_ERROR(0);
+							}	
+						} 
+						// Stop Command
+						else if(currentCommand == 3 || currentCommand == 5 || currentCommand == 0|| currentCommand == 8 || currentCommand == 10 || currentCommand == 13){
+							sprintf(str,"S%d",msgBuffer.buf[2]);
+							//sprintf(str,"testlol");
+			    			// Print something on LCD
+							if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+								VT_HANDLE_FATAL_ERROR(0);
+							}
+							if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverOnCorrection),i2cRoverOnCorrection,10) != pdTRUE) {
+								printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+								VT_HANDLE_FATAL_ERROR(0);
+							}
+							if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverStop),i2cRoverStop,10) != pdTRUE) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
-						}*/
-						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverStop),i2cRoverStop,10) != pdTRUE) {
-						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
-						VT_HANDLE_FATAL_ERROR(0);
+							}
 						}
-					}
-					// Rigth Command
-					else if(currentCommand == 9 || currentCommand == 14) {
-						sprintf(str,"R%d",msgBuffer.buf[2]);
-						//sprintf(str,"testlol");
-		    			// Print something on LCD
-						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+						// Rigth Command
+						else if(currentCommand == 9 || currentCommand == 14) {
+							sprintf(str,"R%d",msgBuffer.buf[2]);
+							//sprintf(str,"testlol");
+			    			// Print something on LCD
+							if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+								VT_HANDLE_FATAL_ERROR(0);
+							}
+							if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveR90),i2cRoverMoveR90,10) != pdTRUE) {
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
+							}
 						}
-						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveR90),i2cRoverMoveR90,10) != pdTRUE) {
-						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
-						VT_HANDLE_FATAL_ERROR(0);
-						}
-					}
-					else if( currentCommand == 4) {
-						sprintf(str,"L%d",msgBuffer.buf[2]);
-						//sprintf(str,"testlol");
-		    			// Print something on LCD
-						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+						// move5cm Command
+						else if(currentCommand == 16 || currentCommand == 17) {
+							sprintf(str,"Movecm%d",msgBuffer.buf[2]);
+							//sprintf(str,"testlol");
+			    			// Print something on LCD
+							if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+								VT_HANDLE_FATAL_ERROR(0);
+							}
+							if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(move5cm),move5cm,10) != pdTRUE) {
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
+							}
 						}
-						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMove90),i2cRoverMove90,10) != pdTRUE) {
-						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
-						VT_HANDLE_FATAL_ERROR(0);
+						else if( currentCommand == 4) {
+							sprintf(str,"L%d",msgBuffer.buf[2]);
+							//sprintf(str,"testlol");
+			    			// Print something on LCD
+							if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+								VT_HANDLE_FATAL_ERROR(0);
+							}
+							if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMove90),i2cRoverMove90,10) != pdTRUE) {
+							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+							VT_HANDLE_FATAL_ERROR(0);
+							}
 						}
-					}
-					else {
-					//do nothing
-					}
-					}
-					lastCommand = currentCommand;
+						else {
+						//do nothing
+						}
+						}
+						lastCommand = currentCommand;
+			}
 			//printf(" This is currentCommand :D %d\n",currentCommand);
 			break;
 		// Navigatation for incoming sensor data		 
@@ -271,8 +330,12 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 
 			extender--;
 			if ( extender < 0 ) {
-				if (msgBuffer.buf[1] != 0 ) {
-					currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
+				// REStop Command
+			if(currentCommand == 3 || currentCommand == 5 || currentCommand == 0|| currentCommand == 8 || currentCommand == 10 || currentCommand == 13 ){
+				//do nothing because this is all based on tick data now
+				}
+				else if (msgBuffer.buf[1] > 3 ) {
+					currentCommand = myCommandRover(msgBuffer.buf[3], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
 					printf(" This is currentCommand :D %d\n",currentCommand);
 				}
 				//currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
@@ -297,10 +360,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
 						}
-						/*if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOnWallTracking),RoverMsgTurnOnWallTracking,10) != pdTRUE) {
+						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverOnCorrection),i2cRoverOnCorrection,10) != pdTRUE) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
-						}*/
+						}
 						incrementMsgCount();	
 					}
 					// Stop Command
@@ -308,10 +371,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						sprintf(str,"S%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
 						//sprintf(str,"testlol");
 		    			// Print something on LCD
-						/*if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOffWallTracking),RoverMsgTurnOffWallTracking,10) != pdTRUE) {
+						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverOffCorrection),i2cRoverOffCorrection,10) != pdTRUE) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
-						}*/
+						}
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
@@ -493,10 +556,10 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 			return 1;
 		}
 		else if (lastCommand == 1) {// on
-			return 2;
+			return 2;//buffer
 		}
 		//off
-		else if(lastCommand == 2 && avgFront <= 70 && avgFront >= 1 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02) {
+		else if(lastCommand == 2 && avgFront <= 60 && avgFront >= 1 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02) {
 			return 3;
 		}
 		//off
@@ -516,15 +579,18 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 			return 7;
 		}
 		//on
-		else if (lastCommand == 7 && avgFront <= 70 && avgFront >= 1 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02) {
+		else if (lastCommand == 7 && avgFront <= 60 && avgFront >= 1 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02) {
 			return 3;
 		}
 		//off
-		else if (lastCommand == 7 && avgSide >=100 && avgFront >=100 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02 && percentErrorSide <= .02 && percentErrorSide >= -.02) {
+		else if (lastCommand == 7 && avgSide >=100 && avgFront >=100 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02 && percentErrorSide <= .15 && percentErrorSide >= -.15) {
 			return 8;
 		}
 		else if(lastCommand == 8 && tickdata == 0) {
-			return 9;
+			return 16;// Move 5cm
+		}
+		else if(lastCommand == 16 && tickdata == 0) {
+			return 9;// right
 		}
 		else if (lastCommand == 9 && tickdata == 0 ) {
 			return 10;
@@ -535,14 +601,17 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 11) {
 			return 12;
 		}
-		else if (lastCommand == 12 && avgSide <= 50 && data == 1 && percentErrorSide <= .02 && percentErrorSide >= -.02) {
+		else if (lastCommand == 12 && avgSide <= 50 && data == 1 && percentErrorSide <= .15 && percentErrorSide >= -.15) {
 			return 15;
 		}
-		else if (lastCommand == 15 && avgSide >= 100 && data == 1 && percentErrorSide <= .02 && percentErrorSide >= -.02) {
+		else if (lastCommand == 15 && avgSide >= 100 && data == 1 && percentErrorSide <= .15 && percentErrorSide >= -.15) {
 			return 13;
 		}
 		else if (lastCommand == 13 && tickdata == 0){
-			return 14;
+			return 17;// move 5cm
+		}
+		else if (lastCommand == 17 && tickdata == 0){
+			return 14;//right
 		}
 		else if(lastCommand == 14 && tickdata == 0) {
 			return 0;
