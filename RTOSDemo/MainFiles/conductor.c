@@ -77,6 +77,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	myNavStruct *navData = param->navData;
 	myMapStruct *mapData = param->mapData;
 	uint8_t recvMsgType;
+	mapStruct.mappingFlag = 0;
 
 	// 255 will always be a bad message
 	countDefArray[255] = BadMsg;
@@ -98,7 +99,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			{1,1,1,1,0,0,0,0,0,0,0,1},
 			{0,0,0,1,0,0,0,0,1,1,1,1},
 			{0,0,0,1,1,1,1,1,1,0,0,0}};		   */
-			int hi =0;
+			/*int hi =0;
 			int hj=0;
 			for (hi=0; hi<10 ; hi++) {
 				for ( hj=0; hj<10; hj++){
@@ -114,7 +115,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 					}
 					//}
 				}
-			} 
+			} */
 		// Wait for a message from an I2C operation
 		if (vtI2CDeQ(devPtr,vtI2CMLen,Buffer,&rxLen,&recvMsgType,&status) != pdTRUE) {
 			VT_HANDLE_FATAL_ERROR(0);
@@ -149,7 +150,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				//printf("MotorLeftData\n");
 				GPIO_ClearValue(0,0x78000);
 				GPIO_SetValue(0, 0x40000);
-				SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
+				//SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				SendNavValueMsg(navData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				SendMapValueMsg(mapData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				break;
@@ -186,7 +187,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		default: {
 			printf("ConductDefault\n");
 			//printf("Snding this to the nav\n");
-			SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
+			//SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
 			SendMapValueMsg(mapData,0x11,Buffer,portMAX_DELAY);
 			//SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
 			/*switch(recvMsgType) {
