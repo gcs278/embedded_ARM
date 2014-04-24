@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>FreeRTOS.org uIP WEB server demo</title>
-	<meta http-equiv="refresh" content="30">
+	<meta http-equiv="refresh" content="10">
   </head>
   <body onload ="show();">
 <font face="arial">
@@ -44,7 +44,7 @@ DEBUGGING CONTROLLER
 //	To reset a paused stopwatch
 //		obj.stop();
 //
-var	clsStopwatch = function() {
+/*var	clsStopwatch = function() {
 		// Private vars
 		var	startAt	= 0;	// Time of last start / resume. (0 if not running)
 		var	lapTime	= 0;	// Time on the clock when last stopped in milliseconds
@@ -125,17 +125,17 @@ function reset() {
 	stop();
 	x.reset();
 	update();
-}
+}*/
 		jQuery(document).ready(function($) {
 		$('body').keydown(function(evt) {
 		    switch(evt.keyCode) {
 		    	case 82: // R - run data collection
 		    		$.get("?run=4");
-		    		start();
+		    		//start();
 		    		break;
 		    	case 83: // S - stop data collection
 		    		$.get("?run=5");
-		    		stop();
+		    		//stop();
 		    		break;
 
 		        case 37: // left
@@ -149,6 +149,9 @@ function reset() {
 		        case 39: // right
 		       		$.get( "?run=2");
 		            break;
+				case 77: // M
+					$.get( "?run=55");
+					break;
 
 		        case 40: // down
 		        	if (evt.shiftKey) // shift + down == back up

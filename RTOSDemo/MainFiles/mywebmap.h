@@ -27,6 +27,7 @@ struct myMapWebVars {
 	int seconds;
 	int min;
 	int timerFlag;
+	int mappingFlag;
 	xSemaphoreHandle SEMForTotalDistance;
 	xSemaphoreHandle SEMForSensors;
 

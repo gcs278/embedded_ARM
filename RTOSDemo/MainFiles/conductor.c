@@ -74,6 +74,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	vtTempStruct *tempData = param->tempData;
 	myNavStruct *navData = param->navData;
 	uint8_t recvMsgType;
+	mapStruct.mappingFlag = 0;
 
 	// 255 will always be a bad message
 	countDefArray[255] = BadMsg;

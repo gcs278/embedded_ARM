@@ -327,6 +327,9 @@ extern void vParTestSetLEDState( long lState );
 				VT_HANDLE_FATAL_ERROR(0);
 			}
 		}
+		else if ( !strcmp( c, "?run=55" )) {
+			mapStruct.mappingFlag = 1;		   	
+		}
 		else if ( !strcmp( c, "?run=10" )) {
 		   	uint8_t i2cRoverMoveBack[] = {RoverMsgMotorRight90, 0x00};
 			if (vtI2CEnQ(roverComm->i2cStruct,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveBack),i2cRoverMoveBack,10) != pdTRUE) {

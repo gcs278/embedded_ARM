@@ -192,10 +192,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
 						}
-						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOnWallTracking),RoverMsgTurnOnWallTracking,10) != pdTRUE) {
+						/*if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOnWallTracking),RoverMsgTurnOnWallTracking,10) != pdTRUE) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
-						}	
+						}*/	
 					}
 					// Stop Command
 					else if(currentCommand == 3 || currentCommand == 5 || currentCommand == 0|| currentCommand == 8 || currentCommand == 10 || currentCommand == 13){
@@ -205,10 +205,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
-						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOffWallTracking),RoverMsgTurnOffWallTracking,10) != pdTRUE) {
+						/*if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOffWallTracking),RoverMsgTurnOffWallTracking,10) != pdTRUE) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
-						}
+						}*/
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverStop),i2cRoverStop,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
@@ -297,10 +297,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
 						}
-						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOnWallTracking),RoverMsgTurnOnWallTracking,10) != pdTRUE) {
+						/*if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOnWallTracking),RoverMsgTurnOnWallTracking,10) != pdTRUE) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
-						}
+						}*/
 						incrementMsgCount();	
 					}
 					// Stop Command
@@ -308,10 +308,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						sprintf(str,"S%d,%d,%d,%d",msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5]);
 						//sprintf(str,"testlol");
 		    			// Print something on LCD
-						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOffWallTracking),RoverMsgTurnOffWallTracking,10) != pdTRUE) {
+						/*if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(RoverMsgTurnOffWallTracking),RoverMsgTurnOffWallTracking,10) != pdTRUE) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
-						}
+						}*/
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
