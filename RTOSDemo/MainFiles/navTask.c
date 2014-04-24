@@ -50,7 +50,7 @@ typedef struct __myNavMsg
 // The Nav task
 static portTASK_FUNCTION_PROTO( myNavUpdateTask, pvParameters );
 
-void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,  vtLCDStruct *lcd)
+void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,  vtLCDStruct *lcd, myMapStruct *MapData)
 {
 	mapStruct.SEMForSensors = NULL;
 	// create the semaphore
@@ -62,6 +62,7 @@ void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI
 	portBASE_TYPE retval;
 	NavData->dev = i2c;
 	NavData->lcdData = lcd;
+	NavData->mapData = MapData;
 	if ((retval = xTaskCreate( myNavUpdateTask, ( signed char * ) "Navigation", navSTACK_SIZE, (void *) NavData, uxPriority, ( xTaskHandle * ) NULL )) != pdPASS) {
 		VT_HANDLE_FATAL_ERROR(retval);
 	}
@@ -125,6 +126,8 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	
 	unsigned char messageCount = 0;
 
+	uint8_t Buffer_map[vtI2CMLen] = {0,0,0,0,0,0,0,0,0,0};
+
 	uint8_t i2cRoverMoveForward[] = {0x01, 0x00};
 	uint8_t i2cRoverStop[] = {0x05, 0x00};
 	uint8_t i2cRoverMove90[] = {0x24, 0x33};
@@ -133,6 +136,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	uint8_t i2cBrightRed[] = {'n', 0x00,0xff,0x00}; 
 	char str[20];
 
+	myMapStruct *mapData = param->mapData;
 	for(;;)
 	{
 	// tell what the rover what to do
@@ -177,6 +181,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						sprintf(str,"G%d",msgBuffer.buf[2]);
 						//sprintf(str,"testlol");
 		    			// Print something on LCD
+						
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
@@ -206,6 +211,8 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
+						printf("Sending right command!\n");
+						SendMapValueMsg(mapData,RoverMsgMotorRight90, Buffer_map, portMAX_DELAY);
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveR90),i2cRoverMoveR90,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
@@ -218,6 +225,8 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 							VT_HANDLE_FATAL_ERROR(0);
 						}
+						printf("Sending left command!\n");
+						SendMapValueMsg(mapData,RoverMsgMotorLeft90, Buffer_map, portMAX_DELAY);
 						if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMove90),i2cRoverMove90,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
@@ -420,7 +429,7 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 1) {
 			return 2;
 		}
-		else if(lastCommand == 2 && avgFront <= 10 && avgFront >= 1 && data == 1) {
+		else if(lastCommand == 2 && avgFront <= 20 && avgFront >= 1 && data == 1) {
 			return 3;
 		}
 		else if (lastCommand == 3 && tickdata == 0) {
@@ -435,7 +444,7 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 6) {
 			return 7;
 		}
-		else if (lastCommand == 7 && avgFront <= 10 && avgFront >= 1 && data == 1) {
+		else if (lastCommand == 7 && avgFront <= 20 && avgFront >= 1 && data == 1) {
 			return 3;
 		}
 		else if (lastCommand == 7 && avgSide >=30 && avgFront >=50 && data == 1) {

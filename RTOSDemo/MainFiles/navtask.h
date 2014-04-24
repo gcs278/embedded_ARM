@@ -3,6 +3,7 @@
 #include "queue.h"
 #include "timers.h"
 #include "vtI2C.h"
+#include "maptask.h"
 
 
 
@@ -13,12 +14,13 @@ typedef struct __NavStruct {
 	vtI2CStruct *dev; //sound like a good idea
 	vtLCDStruct *lcdData;
 	xQueueHandle inQ;
+	myMapStruct *mapData;
 } myNavStruct;
 
 #define myNavMaxLen   10
 
 // start the task
-void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c, vtLCDStruct *lcd);
+void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c, vtLCDStruct *lcd, myMapStruct *MapData);
 
 portBASE_TYPE SendNavValueMsg(myNavStruct *NavData, uint8_t msgType, uint8_t *value, portTickType ticksToBlock);
 

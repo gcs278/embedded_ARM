@@ -72,6 +72,7 @@ task.h is included from an application file. */
 #include "timers.h"
 #include "StackMacros.h"
 #include "mywebmap.h"
+#include "maptask.h"
 
 #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
@@ -1347,6 +1348,9 @@ unsigned portBASE_TYPE uxTaskGetNumberOfTasks( void )
 // new task that i made to get the vaulue of the map from the struct to
 // be displayed on the website
 
+int total_len;
+wall web_walls[50];
+
 void vTaskGetMapWebString( char *pcWriteBuffer) {
 	// this is a very bad way of doing this since i am supending all task
 	// i need to just fiind what task i need to suspend when the struct is getting written to
@@ -1366,10 +1370,7 @@ void vTaskGetMapWebString( char *pcWriteBuffer) {
 		int numOfOne = 0;
 		char *myvarBuf[1000];
 		//count = 8;
-		wallArray[0].length = 300;
-		printf("THIS SHIT\n");
-		//printf("%d",  wallArray[0].length);
-		printf("FUCKME\n");
+		wallArray[0].length = 300 + total_len;
 		wallArray[0].direction = 270;
 		wallArray[1].length = 100;
 		wallArray[1].direction = 0;
@@ -1381,12 +1382,13 @@ void vTaskGetMapWebString( char *pcWriteBuffer) {
 		wallArray[4].direction = 270;
 		wallArray[5].length = 100;
 		wallArray[5].direction = 0;
-		wallArray[6].length = 300;
+		wallArray[6].length = 300 + total_len;
 		wallArray[6].direction = 90;
 		wallArray[7].length = 300;
 		wallArray[7].direction = 180;
 		sprintf(pcWriteBuffer, "<script>");
 		//sprintf(pcWriteBuffer, "12435678901243567890123456789124356789012435678901243567890123456789012345667889012334556677878987654321234567890987654321234567890987654321234567890987654323456789098765432123456789098765432");
+		/*
 		for(i = 0 ; i<size; i++) {
 			if (wallArray[i].direction == 270) {
 				xAxis = xAxis + wallArray[i].length;
@@ -1420,6 +1422,42 @@ void vTaskGetMapWebString( char *pcWriteBuffer) {
 			//strcat(pcWriteBuffer, "ctx.stoke();");
 
 		}
+		*/
+
+		for(i = 0 ; i<size; i++) {
+			if (web_walls[i].direction == 270) {
+				xAxis = xAxis + web_walls[i].length;
+			    //printf("%d\n",  web_walls[i].length);
+				//printf("x%d\n",  xAxis);
+			}
+			else if (web_walls[i].direction == 90) {
+			    //printf("%d\n",  web_walls[i].length);
+				xAxis = xAxis - web_walls[i].length;
+				//printf("x%d\n",  xAxis);
+			}
+			else if (web_walls[i].direction == 0) {
+				//printf("%d\n",  web_walls[i].length);
+				yAxis = yAxis + web_walls[i].length;
+				//printf("y%d\n",  yAxis);
+			}
+			else if (web_walls[i].direction == 180) {
+				//printf("%d\n",  web_walls[i].length);
+				yAxis = yAxis - web_walls[i].length;
+				//printf("y%d\n",  yAxis);
+			}
+			strcat(pcWriteBuffer, "ctx.lineTo(");
+			snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  yAxis);
+			//printf( "y%d\n",  yAxis);
+			strcat(pcWriteBuffer, myvarBuf);
+			strcat(pcWriteBuffer, ",");
+			snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  xAxis);
+			//printf("x%d\n",  xAxis);
+			strcat(pcWriteBuffer, myvarBuf);
+			strcat(pcWriteBuffer, ");");
+			//strcat(pcWriteBuffer, "ctx.stoke();");
+
+		}
+
 		strcat(pcWriteBuffer, "</script>");	
 		printf(pcWriteBuffer);
 		//sprintf(pcWriteBuffer, "<script>ctx.stroke");

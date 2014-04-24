@@ -272,7 +272,7 @@ int main( void )
 	startTimerForTemperature(&tempSensorData);
 	 
 	myStartMapTask(&mapData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0);
-	myStartNavTask(&navData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0, &vtLCDdata);
+	myStartNavTask(&navData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0, &vtLCDdata, &mapData);
 	// start up a "conductor" task that will move messages around
 	vStartConductorTask(&conductorData,mainCONDUCTOR_TASK_PRIORITY,&vtI2C0,&tempSensorData, &navData, &mapData);
 	#endif

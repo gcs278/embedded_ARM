@@ -124,7 +124,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		//   This just shows going to one task/queue, but you could easily send to
 		//   other Q/tasks for other message types
 		// This isn't a state machine, it is just acting as a router for messages
-		printf("New Message: %d\n",Buffer[0]);
+		//printf("New Message: %d\n",Buffer[0]);
 		
 		// If it is the initialization message
 		if ( recvMsgType == vtI2CMsgTypeTempInit ) {

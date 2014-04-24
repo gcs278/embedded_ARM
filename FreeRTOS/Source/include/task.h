@@ -68,9 +68,20 @@
 #include "portable.h"
 #include "list.h"
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*-----------------------------------------------------------
+ * GLOBAL VARIABLES FOR CROSS COMMUNICATION
+ *----------------------------------------------------------*/
+
+int total_len;
+void update_len(int	new_len)
+{
+	total_len = new_len;
+}
 
 /*-----------------------------------------------------------
  * MACROS AND DEFINITIONS
