@@ -18,6 +18,7 @@ DEBUGGING CONTROLLER
 <p>
 <form name="aForm" action="/test.shtml" method="get">
 %! test
+
 <p>
 <input type="submit" value="TEST">
 </form>

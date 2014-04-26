@@ -1357,14 +1357,14 @@ void vTaskGetMapWebString( char *pcWriteBuffer) {
 		//sprintf(pcWriteBuffer, "<h4>IM IN A TASK</h4>");
 		//strcat(pcWriteBuffer, "<h5> IM HERE AGAIN</h5>");
 		/*sprintf(pcWriteBuffer," <canvas id=\"myCanvas\" width=\"200\" height = \"100\" style = \"border:1px solid #d3d3d3;\">Your browser does not support the HTML5 canvas tag.</canvas><script>var c=document.getElementById(\"myCanvas\");var ctx=c.getContext(\"2d\");");
-		*/int i =0;
+		*/ /*int i =0;
 		int xAxis = 0;
 		int yAxis = 0; 
 		int j =0;
 		int size=8;
 		wall wallArray[size];
 		int numOfOne = 0;
-		char *myvarBuf[1000];
+		char myvarBuf[1000];
 		//count = 8;
 		wallArray[0].length = 300;
 		printf("THIS SHIT\n");
@@ -1409,19 +1409,19 @@ void vTaskGetMapWebString( char *pcWriteBuffer) {
 				//printf("y%d\n",  yAxis);
 			}
 			strcat(pcWriteBuffer, "ctx.lineTo(");
-			snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  yAxis);
-			//printf( "y%d\n",  yAxis);
+			sprintf(myvarBuf, "%d",  yAxis);
+			printf( "y%d\n",  yAxis);
 			strcat(pcWriteBuffer, myvarBuf);
 			strcat(pcWriteBuffer, ",");
-			snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  xAxis);
-			//printf("x%d\n",  xAxis);
+			sprintf(myvarBuf, "%d",  xAxis);
+			printf("x%d\n",  xAxis);
 			strcat(pcWriteBuffer, myvarBuf);
 			strcat(pcWriteBuffer, ");");
 			//strcat(pcWriteBuffer, "ctx.stoke();");
 
 		}
 		strcat(pcWriteBuffer, "</script>");	
-		printf(pcWriteBuffer);
+		printf(pcWriteBuffer); */
 		//sprintf(pcWriteBuffer, "<script>ctx.stroke");
 		//sprintf(pcWriteBuffer, "<script>var x = [");
 		/*strcat(pcWriteBuffer, "2,");
