@@ -19,6 +19,7 @@
 #include "navtask.h"
 #include "conductor.h"
 #include "mywebmap.h"
+#include "maptask.h"
 /* *********************************************** */
 // definitions and data structures that are private to this file
 
@@ -50,7 +51,7 @@ typedef struct __myNavMsg
 // The Nav task
 static portTASK_FUNCTION_PROTO( myNavUpdateTask, pvParameters );
 
-void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,  vtLCDStruct *lcd)
+void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c, vtLCDStruct *lcd, myMapStruct *MapData)
 {
 	mapStruct.SEMForSensors = NULL;
 	// create the semaphore
@@ -96,6 +97,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	//seems like a good idea
 //	uint8_t rxLen, status;
 	uint8_t Buffer[vtI2CMLen];
+	uint8_t Buffer_map[vtI2CMLen] = {0,0,0,0,0,0,0,0,0,0};
 	uint8_t *valPtr = &(Buffer[0]);
 	// Get the parameters
 	myNavStruct *param = (myNavStruct *) pvParameters;
@@ -103,6 +105,8 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	vtI2CStruct *devPtr = param->dev;
 	// Get the LCD information pointer
 	vtLCDStruct *lcdData = param->lcdData;
+
+	myMapStruct *mapData = param->mapData;
 	// Get the sensor data
 	myNavMsg msgBuffer;
 	//flag
@@ -289,7 +293,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 							}
 						}
 						else if( currentCommand == 4) {
-						SendMapValueMsg(mapData,RoverMsgMotorRight90, Buffer_map, portMAX_DELAY);
+							SendMapValueMsg(mapData,RoverMsgMotorRight90, Buffer_map, portMAX_DELAY);
 							sprintf(str,"L%d",msgBuffer.buf[2]);
 							//sprintf(str,"testlol");
 			    			// Print something on LCD
