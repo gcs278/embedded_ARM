@@ -119,7 +119,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 
 	// commands for the function
 	uint8_t lastCommand = 0;
-	uint8_t currentCommand = 0;	
+	uint8_t currentCommand = 0;
+	uint8_t lastsidedata = 200;
+	uint8_t lastsidedata2 = 200;
+	float percentError = 0;	
 
 	int extender = 0; // For extending the time between right turns
 	int moveExtend = 0;
@@ -198,7 +201,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 			// if it didn't stop resend stop and check again
 			else {
 
-				if (msgBuffer.buf[1] > 3 ) {
+				if (msgBuffer.buf[1] > 0 ) {
 					currentCommand = myCommandRover(50, 50, 30, 30, lastCommand, msgBuffer.buf[2], 0);
 					printf(" This is currentCommand :D %d\n",currentCommand);
 				}
@@ -334,8 +337,43 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 			if(currentCommand == 3 || currentCommand == 5 || currentCommand == 0|| currentCommand == 8 || currentCommand == 10 || currentCommand == 13 ){
 				//do nothing because this is all based on tick data now
 				}
-				else if (msgBuffer.buf[1] > 3 ) {
+				else if (msgBuffer.buf[1] > 3  && msgBuffer.buf[1] < 60) {
 					currentCommand = myCommandRover(msgBuffer.buf[3], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
+					if( currentCommand == 12) {
+						if( lastsidedata > lastsidedata2) {
+							percentError = msgBuffer.buf[4] - lastsidedata2;
+							percentError = percentError / msgBuffer.buf[4];
+							if( percentError >= .3 ){
+								currentCommand = 13;
+								printf(" f 1 2 %d%d%d\n", msgBuffer.buf[4], lastsidedata, lastsidedata2 );	
+							}
+						}
+						else if ( lastsidedata < lastsidedata2 ) {
+							percentError = msgBuffer.buf[4] - lastsidedata;
+							percentError = percentError / msgBuffer.buf[4];
+							if( percentError >= .3 ){
+								currentCommand = 13;
+								printf(" f 1 2 %d%d%d\n", msgBuffer.buf[4], lastsidedata, lastsidedata2 );	
+							}
+						}
+						else {
+							percentError = msgBuffer.buf[4] - lastsidedata;
+							percentError = percentError / msgBuffer.buf[4];
+							if( percentError >= .3 ){
+								currentCommand = 13;
+								printf(" f 1 2 %d%d%d\n", msgBuffer.buf[4], lastsidedata, lastsidedata2 );	
+							}
+						}
+						//set the two buffer together
+						lastsidedata2 = lastsidedata;
+						lastsidedata = msgBuffer.buf[4];
+					} 
+					else {
+						lastsidedata = 255;
+						lastsidedata2 = 255;
+						percentError = 0;
+					}
+
 					printf(" This is currentCommand :D %d\n",currentCommand);
 				}
 				//currentCommand = myCommandRover(msgBuffer.buf[2], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
@@ -583,7 +621,7 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 			return 3;
 		}
 		//off
-		else if (lastCommand == 7 && avgSide >=100 && avgFront >=100 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02 && percentErrorSide <= .15 && percentErrorSide >= -.15) {
+		else if (lastCommand == 7 && avgSide >=150 && avgFront >=100 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02 && percentErrorSide <= .2 && percentErrorSide >= -.2) {
 			return 8;
 		}
 		else if(lastCommand == 8 && tickdata == 0) {
@@ -601,12 +639,12 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 		else if (lastCommand == 11) {
 			return 12;
 		}
-		else if (lastCommand == 12 && avgSide <= 50 && data == 1 && percentErrorSide <= .15 && percentErrorSide >= -.15) {
+		/*else if (lastCommand == 12 && avgSide <= 50 && data == 1 && percentErrorSide <= .2 && percentErrorSide >= -.2) {
 			return 15;
 		}
-		else if (lastCommand == 15 && avgSide >= 100 && data == 1 && percentErrorSide <= .15 && percentErrorSide >= -.15) {
+		else if (lastCommand == 15 && avgSide >= 80 && data == 1 && percentErrorSide <= .2 && percentErrorSide >= -.2) {
 			return 13;
-		}
+		} */
 		else if (lastCommand == 13 && tickdata == 0){
 			return 17;// move 5cm
 		}
