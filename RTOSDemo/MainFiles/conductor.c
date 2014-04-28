@@ -85,6 +85,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	for(i = 0; i < 255; i++) {
 		countDefArray[i] = CleanMsg;
 	}
+	uint8_t i2cRoverMoveStop[] = {0x05, 0x00};
 	// Like all good tasks, this should never exit
 	for(;;)
 	{
@@ -131,7 +132,8 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		if ( recvMsgType == vtI2CMsgTypeTempInit ) {
 			SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
 
-		} else {
+		}
+		 else {
 		// Switch on the definition of the incoming count
 		switch(countDefArray[Buffer[0]]) {
 			case RoverMsgSensorAllData: {
@@ -203,6 +205,12 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			break;
 			}
 		}
+		/*if(Buffer[6] == 1) {
+			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveStop),i2cRoverMoveStop,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+			stopGettingMotor("DATASTOP");
+		} */
 		}
 		// Clear the count defition
 		countDefArray[Buffer[0]] = CleanMsg;
