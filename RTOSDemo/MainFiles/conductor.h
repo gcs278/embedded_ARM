@@ -3,6 +3,7 @@
 #include "vtI2C.h"
 #include "i2cTemp.h"
 #include "navtask.h"
+#include "maptask.h"
 #include "Messages.h"
 // Structure used to pass parameters to the task
 // Do not touch...
@@ -10,6 +11,7 @@ typedef struct __ConductorStruct {
 	vtI2CStruct *dev;
 	vtTempStruct *tempData;
 	myNavStruct *navData;
+	myMapStruct *mapData;
 } vtConductorStruct;
 
 unsigned char countDefArray[256];
@@ -23,7 +25,7 @@ unsigned char countDefArray[256];
 //   uxPriority -- the priority you want this task to be run at
 //   i2c: pointer to the data structure for an i2c task
 //   temperature: pointer to the data structure for an LCD task (may be NULL)
-void vStartConductorTask(vtConductorStruct *conductorData,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature, myNavStruct *navs);
+void vStartConductorTask(vtConductorStruct *conductorData,unsigned portBASE_TYPE uxPriority, vtI2CStruct *i2c,vtTempStruct *temperature, myNavStruct *navs, myMapStruct *maps);
 
 void insertCountDef(unsigned char def);
 unsigned char getMsgCount();

@@ -121,6 +121,7 @@ You should read the note above.
 #include "myTimers.h"
 #include "conductor.h"
 #include "navtask.h"
+#include "maptask.h"
 #include "lpc17xx_gpio.h"
 
 /* syscalls initialization -- *must* occur first */
@@ -192,6 +193,7 @@ static vtI2CStruct vtI2C0;
 static vtTempStruct tempSensorData;
 // data stricture for nav
 static myNavStruct navData;
+static myMapStruct mapData;
 // data structure required for conductor task
 static vtConductorStruct conductorData;
 
@@ -268,10 +270,11 @@ int main( void )
 	#endif
 	// Here we set up a timer that will send messages to the Temperature sensing task.  The timer will determine how often the sensor is sampled
 	startTimerForTemperature(&tempSensorData);
-
-	myStartNavTask(&navData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0, &vtLCDdata);
+	 
+	myStartMapTask(&mapData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0);
+	myStartNavTask(&navData, mainI2CTEMP_TASK_PRIORITY, &vtI2C0, &vtLCDdata, &mapData);
 	// start up a "conductor" task that will move messages around
-	vStartConductorTask(&conductorData,mainCONDUCTOR_TASK_PRIORITY,&vtI2C0,&tempSensorData, &navData);
+	vStartConductorTask(&conductorData,mainCONDUCTOR_TASK_PRIORITY,&vtI2C0,&tempSensorData, &navData, &mapData);
 	#endif
 
     /* Create the USB task. MTJ: This routine has been modified from the original example (which is not a FreeRTOS standard demo) */

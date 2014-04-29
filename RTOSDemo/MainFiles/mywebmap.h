@@ -40,4 +40,18 @@ typedef struct wallStruct{
 	int direction;
 } wall;
 
+extern wall web_walls[50];
+int num_walls;
+
+void update_walls(wall map_walls[50], int map_num)
+{
+	int i;
+	for (i = 0; i < map_num; i++)
+	{
+		web_walls[i] = map_walls[i];
+	}
+	num_walls = map_num;
+}
+
+
 #endif

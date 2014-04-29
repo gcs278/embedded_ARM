@@ -415,79 +415,41 @@ static char myvarBuf[100];
 static unsigned	short
 generate_map_stats(void *arg)
 {
-	( void ) arg;
-	//strcat(uip_appdata," <canvas id=\"myCanvas\" width=\"200\" height = \"100\" style = \"border:1px solid #d3d3d3;\">Your browser does not support the HTML5 canvas tag.</canvas><script>var c=document.getElementById(\"myCanvas\");var ctx=c.getContext(\"2d\");");
-	//char outputMap[1200]=" <canvas id=\"myCanvas\" width=\"200\" height = \"100\" style = \"border:1px solid #d3d3d3;\">Your browser does not support the HTML5 canvas tag.</canvas><script>var c=document.getElementById(\"myCanvas\");var ctx=c.getContext(\"2d\");var map =[[1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,1,1,1,1],[1,0,0,0,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,0,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,0,0,0,0,0,0,0,1],[0,0,0,1,0,0,0,0,1,1,1,1],[1,1,1,1,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,0,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1]];for ( var i=0; i<15 ; i++) {for ( var j=0; j<12; j++){if (map[i][j] == 1) {ctx.fillRect(j,i,1,1);}}}</script>";
-	//sprintf(uip_appdata,outputMap);
-	//char *ouputMap[2000]="";
-	int i =0;
-		int xAxis = 0;
-		int yAxis = 0; 
-		//int j =0;
-		int size=8;
-		wall wallArray[size];
-		//int numOfOne = 0;
-		//count = 8;
-		wallArray[0].length = 300;
-		printf("THIS SHIT\n");
-		//printf("%d",  wallArray[0].length);
-		printf("FUCKME\n");
-		wallArray[0].direction = 270;
-		wallArray[1].length = 100;
-		wallArray[1].direction = 0;
-		wallArray[2].length = 50;
-		wallArray[2].direction = 90;
-		wallArray[3].length = 100;
-		wallArray[3].direction = 0;
-		wallArray[4].length = 50;
-		wallArray[4].direction = 270;
-		wallArray[5].length = 100;
-		wallArray[5].direction = 0;
-		wallArray[6].length = 300;
-		wallArray[6].direction = 90;
-		wallArray[7].length = 300;
-		wallArray[7].direction = 180;
-		sprintf(uip_appdata, "<script>");
-		//sprintf(pcWriteBuffer, "12435678901243567890123456789124356789012435678901243567890123456789012345667889012334556677878987654321234567890987654321234567890987654321234567890987654323456789098765432123456789098765432");
-		for(i = 0 ; i<size; i++) {
-			if (wallArray[i].direction == 270) {
-				xAxis = xAxis + wallArray[i].length;
-			    //printf("%d\n",  wallArray[i].length);
-				//printf("x%d\n",  xAxis);
-			}
-			else if (wallArray[i].direction == 90) {
-			    //printf("%d\n",  wallArray[i].length);
-				xAxis = xAxis - wallArray[i].length;
-				//printf("x%d\n",  xAxis);
-			}
-			else if (wallArray[i].direction == 0) {
-				//printf("%d\n",  wallArray[i].length);
-				yAxis = yAxis + wallArray[i].length;
-				//printf("y%d\n",  yAxis);
-			}
-			else if (wallArray[i].direction == 180) {
-				//printf("%d\n",  wallArray[i].length);
-				yAxis = yAxis - wallArray[i].length;
-				//printf("y%d\n",  yAxis);
-			}
-			strcat(uip_appdata, "ctx.lineTo(");
-			sprintf(myvarBuf, "%d",  yAxis);
-			printf( "y%d\n",  yAxis);
-			strcat(uip_appdata, myvarBuf);
-			strcat(uip_appdata, ",");
-			sprintf(myvarBuf, "%d",  xAxis);
-			printf("x%d\n",  xAxis);
-			strcat(uip_appdata, myvarBuf);
-			strcat(uip_appdata, ");");
-			//strcat(pcWriteBuffer, "ctx.stoke();");
 
-		}
-		strcat(uip_appdata, "</script>");	
-		printf(uip_appdata);
-	//vTaskGetMapWebString( uip_appdata);
-	//strcat(uip_appdata, outputMap);
-	//strcat(uip_appdata,"</script>"); 
+	//( void ) arg;
+	
+	// Currently starts at 100
+	int xAxis = 100;
+	int yAxis = 100;
+	//int size=8;
+		
+	sprintf(uip_appdata, "<script>");
+
+	int i =0;
+	for(i = 0 ; i<num_walls; i++) {
+		if (web_walls[i].direction == 270)
+			xAxis = xAxis + web_walls[i].length;
+		else if (web_walls[i].direction == 90)
+			xAxis = xAxis - web_walls[i].length;
+		else if (web_walls[i].direction == 0)
+			yAxis = yAxis + web_walls[i].length;
+		else if (web_walls[i].direction == 180)
+			yAxis = yAxis - web_walls[i].length;
+
+		strcat(uip_appdata, "ctx.lineTo(");
+		sprintf(myvarBuf, "%d",  yAxis);
+		printf( "y%d\n",  yAxis);
+		strcat(uip_appdata, myvarBuf);
+		strcat(uip_appdata, ",");
+		sprintf(myvarBuf, "%d",  xAxis);
+		printf("x%d\n",  xAxis);
+		strcat(uip_appdata, myvarBuf);
+		strcat(uip_appdata, ");");
+	}
+
+	strcat(uip_appdata, "</script>");
 	return strlen( uip_appdata );
+	
 }
 static
 PT_THREAD(map_stats(struct httpd_state *s, char *ptr))

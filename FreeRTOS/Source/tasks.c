@@ -72,6 +72,7 @@ task.h is included from an application file. */
 #include "timers.h"
 #include "StackMacros.h"
 #include "mywebmap.h"
+#include "maptask.h"
 
 #undef MPU_WRAPPERS_INCLUDED_FROM_API_FILE
 
@@ -1347,29 +1348,26 @@ unsigned portBASE_TYPE uxTaskGetNumberOfTasks( void )
 // new task that i made to get the vaulue of the map from the struct to
 // be displayed on the website
 
+int total_len;
+wall web_walls[50];
+
 void vTaskGetMapWebString( char *pcWriteBuffer) {
 	// this is a very bad way of doing this since i am supending all task
 	// i need to just fiind what task i need to suspend when the struct is getting written to
 	// i don't want to be reading to the struct and writing at the same time
 	//vTaskSuspendAll();
 	{
-		//mapStruct.myMapArray;
-		//sprintf(pcWriteBuffer, "<h4>IM IN A TASK</h4>");
-		//strcat(pcWriteBuffer, "<h5> IM HERE AGAIN</h5>");
-		/*sprintf(pcWriteBuffer," <canvas id=\"myCanvas\" width=\"200\" height = \"100\" style = \"border:1px solid #d3d3d3;\">Your browser does not support the HTML5 canvas tag.</canvas><script>var c=document.getElementById(\"myCanvas\");var ctx=c.getContext(\"2d\");");
-		*/ /*int i =0;
+		int i =0;
 		int xAxis = 0;
 		int yAxis = 0; 
 		int j =0;
 		int size=8;
 		wall wallArray[size];
 		int numOfOne = 0;
-		char myvarBuf[1000];
+		char *myvarBuf[1000];
 		//count = 8;
-		wallArray[0].length = 300;
-		printf("THIS SHIT\n");
-		//printf("%d",  wallArray[0].length);
-		printf("FUCKME\n");
+		/*
+		wallArray[0].length = 300 + total_len;
 		wallArray[0].direction = 270;
 		wallArray[1].length = 100;
 		wallArray[1].direction = 0;
@@ -1381,12 +1379,13 @@ void vTaskGetMapWebString( char *pcWriteBuffer) {
 		wallArray[4].direction = 270;
 		wallArray[5].length = 100;
 		wallArray[5].direction = 0;
-		wallArray[6].length = 300;
+		wallArray[6].length = 300 + total_len;
 		wallArray[6].direction = 90;
 		wallArray[7].length = 300;
 		wallArray[7].direction = 180;
+		*/
 		sprintf(pcWriteBuffer, "<script>");
-		//sprintf(pcWriteBuffer, "12435678901243567890123456789124356789012435678901243567890123456789012345667889012334556677878987654321234567890987654321234567890987654321234567890987654323456789098765432123456789098765432");
+		/*
 		for(i = 0 ; i<size; i++) {
 			if (wallArray[i].direction == 270) {
 				xAxis = xAxis + wallArray[i].length;
@@ -1409,262 +1408,57 @@ void vTaskGetMapWebString( char *pcWriteBuffer) {
 				//printf("y%d\n",  yAxis);
 			}
 			strcat(pcWriteBuffer, "ctx.lineTo(");
-			sprintf(myvarBuf, "%d",  yAxis);
-			printf( "y%d\n",  yAxis);
+			snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  yAxis);
+			//printf( "y%d\n",  yAxis);
 			strcat(pcWriteBuffer, myvarBuf);
 			strcat(pcWriteBuffer, ",");
-			sprintf(myvarBuf, "%d",  xAxis);
-			printf("x%d\n",  xAxis);
+			snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  xAxis);
+			//printf("x%d\n",  xAxis);
 			strcat(pcWriteBuffer, myvarBuf);
 			strcat(pcWriteBuffer, ");");
 			//strcat(pcWriteBuffer, "ctx.stoke();");
 
 		}
-		strcat(pcWriteBuffer, "</script>");	
-		printf(pcWriteBuffer); */
-		//sprintf(pcWriteBuffer, "<script>ctx.stroke");
-		//sprintf(pcWriteBuffer, "<script>var x = [");
-		/*strcat(pcWriteBuffer, "2,");
-		strcat(pcWriteBuffer, "5,");
-		strcat(pcWriteBuffer, "10]");
-		strcat(pcWriteBuffer, ";");	 */
-		/*for (j = 0 ; j<10; j++) {
-			if (mapStruct.myMapArray[0][j] ==1 ) {
-				numOfOne = numOfOne +1;
-			}
-			if (mapStruct.myMapArray[1][j] ==1 ) {
-				numOfOne = numOfOne +1;
-			}
-			if (mapStruct.myMapArray[2][j] ==1 ) {
-				numOfOne = numOfOne +1;
-			}
-			if (mapStruct.myMapArray[3][j] ==1 ) {
-				numOfOne = numOfOne +1;
-			}
-			if (mapStruct.myMapArray[4][j] ==1 ) {
-				numOfOne = numOfOne +1;
-			}
-			if (mapStruct.myMapArray[5][j] ==1 ) {
-				numOfOne = numOfOne +1;
-			}
-			if (mapStruct.myMapArray[6][j] ==1 ) {
-				numOfOne = numOfOne +1;
-			}
-			if (mapStruct.myMapArray[7][j] ==1 ) {
-				numOfOne = numOfOne +1;
-			}
-			if (mapStruct.myMapArray[8][j] ==1 ) {
-				numOfOne = numOfOne +1;
-			}
-			if (mapStruct.myMapArray[9][j] ==1 ) {
-				numOfOne = numOfOne +1;
-			}
-		} 
-		count =0;
-		for (j = 0 ; j<10 ; j++) {
-			if (mapStruct.myMapArray[0][j] ==1 ) {
-				snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-				strcat(pcWriteBuffer, myvarBuf);
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[1][j] ==1 ) {
-				snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-				strcat(pcWriteBuffer, myvarBuf);
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[2][j] ==1 ) {
-				snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-				strcat(pcWriteBuffer, myvarBuf);
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[3][j] ==1 ) {
-				snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-				strcat(pcWriteBuffer, myvarBuf);
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[4][j] ==1 ) {
-				snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-				strcat(pcWriteBuffer, myvarBuf);
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[5][j] ==1 ) {
-				snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-				strcat(pcWriteBuffer, myvarBuf);
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[6][j] ==1 ) {
-				snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-				strcat(pcWriteBuffer, myvarBuf);
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[7][j] ==1 ) {
-				snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-				strcat(pcWriteBuffer, myvarBuf);
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[8][j] ==1 ) {
-				snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-				strcat(pcWriteBuffer, myvarBuf);
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[9][j] ==1 ) {
-				snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-				strcat(pcWriteBuffer, myvarBuf);
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-		}
-		strcat(pcWriteBuffer, "];var y =[");
-		count =0;
-		for (i = 0 ; i<10 ;i++) {
-			if (mapStruct.myMapArray[i][0] ==1 ) {
-				strcat(pcWriteBuffer, "0");
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[i][1] ==1 ) {
-				strcat(pcWriteBuffer, "1");
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[i][2] ==1 ) {
-				strcat(pcWriteBuffer, "2");
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[i][3] ==1 ) {
-				strcat(pcWriteBuffer, "3");
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[i][4] ==1 ) {
-				strcat(pcWriteBuffer, "4");
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[i][5] ==1 ) {
-				strcat(pcWriteBuffer, "5");
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[i][6] ==1 ) {
-				strcat(pcWriteBuffer, "6");
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[i][7] ==1 ) {
-				strcat(pcWriteBuffer, "7");
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[i][8] ==1 ) {
-				strcat(pcWriteBuffer, "8");
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-			if (mapStruct.myMapArray[i][9] ==1 ) {
-				strcat(pcWriteBuffer, "9");
-				count = count +1;
-				if(count != numOfOne) {
-				strcat(pcWriteBuffer, ",");
-				}
-			}
-		}
-		strcat(pcWriteBuffer, "];");
-		//strcat(pcWriteBuffer, "var y = [3,4,5];");
-		strcat(pcWriteBuffer, "</script>");	*/
-		//strcat(pcWriteBuffer, "ctx.fillRect(0,0,11,10);");
-		//strcat(pcWriteBuffer, "</script>");
-		//sprintf(pcWriteBuffer, "ctx.fillRect(0,0,11,10);");
-		/*strcat(pcWriteBuffer, "ctx.fillRect(");
-					snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  i );
-					strcat(pcWriteBuffer, myvarBuf);
-					strcat (pcWriteBuffer,",");
-					snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-					strcat(pcWriteBuffer, myvarBuf);
-					strcat (pcWriteBuffer,",11,10);");	  */
-		/*if( mapStruct.testVar == 1) {
-			strcat(pcWriteBuffer, "ctx.fillRect(0,0,3,3);");
-			strcat(pcWriteBuffer, "</script>");
-		}
-		else if (mapStruct.testVar ==0) {
-			for (i=0; i<10 ; i++) {
-				for ( j=0; j<5; j++){
-			 	 if( mapStruct.myMapArray[i][j]== 1) {
-			  		//this give warnings
-			  			strcat(pcWriteBuffer, "ctx.fillRect(");
-						snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  i );
-						strcat(pcWriteBuffer, myvarBuf);
-						strcat (pcWriteBuffer,",");
-						snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  j );
-						strcat(pcWriteBuffer, myvarBuf);
-						strcat (pcWriteBuffer,",1,1);");
-				  }
+		*/
 
-				}
-			}								
-			strcat( pcWriteBuffer,"</script>");	 	  
-		} */
-		/*for( j =0; j<10 ;j ++){
-			snprintf(myvarBuf,sizeof(myvarBuf), "%u,%u,%u,%u,%u,%u,%u,%u,%u,%u<br>",mapStruct.myMapArray[0][j],
-			 mapStruct.myMapArray[1][j],mapStruct.myMapArray[2][j],mapStruct.myMapArray[3][j],mapStruct.myMapArray[4][j],
-			 mapStruct.myMapArray[5][j],
-			 mapStruct.myMapArray[6][j],
-			 mapStruct.myMapArray[7][j],
-			 mapStruct.myMapArray[8][j],
-			 mapStruct.myMapArray[9][j]);
+		for(i = 0 ; i<size; i++) {
+			if (web_walls[i].direction == 270) {
+				xAxis = xAxis + web_walls[i].length;
+			    //printf("%d\n",  web_walls[i].length);
+				//printf("x%d\n",  xAxis);
+			}
+			else if (web_walls[i].direction == 90) {
+			    //printf("%d\n",  web_walls[i].length);
+				xAxis = xAxis - web_walls[i].length;
+				//printf("x%d\n",  xAxis);
+			}
+			else if (web_walls[i].direction == 0) {
+				//printf("%d\n",  web_walls[i].length);
+				yAxis = yAxis + web_walls[i].length;
+				//printf("y%d\n",  yAxis);
+			}
+			else if (web_walls[i].direction == 180) {
+				//printf("%d\n",  web_walls[i].length);
+				yAxis = yAxis - web_walls[i].length;
+				//printf("y%d\n",  yAxis);
+			}
+			strcat(pcWriteBuffer, "ctx.lineTo(");
+			snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  yAxis);
+			//printf( "y%d\n",  yAxis);
 			strcat(pcWriteBuffer, myvarBuf);
-		}			   */
-		/*
-	   sprintf(pcWriteBuffer,"12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890<br>12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890<br>12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890<br>123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890<br>2345678901234567890");
-	   */
+			strcat(pcWriteBuffer, ",");
+			snprintf(myvarBuf,sizeof(pcWriteBuffer), "%d",  xAxis);
+			//printf("x%d\n",  xAxis);
+			strcat(pcWriteBuffer, myvarBuf);
+			strcat(pcWriteBuffer, ");");
+			//strcat(pcWriteBuffer, "ctx.stoke();");
+
+		}
+
+		strcat(pcWriteBuffer, "</script>");	
+		printf(pcWriteBuffer);
+		//sprintf(pcWriteBuffer, "<script>ctx.stroke");
+		
 	}
 	//xTaskResumeAll();
 }
