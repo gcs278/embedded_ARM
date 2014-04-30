@@ -63,6 +63,7 @@ void myStartNavTask(myNavStruct *NavData, unsigned portBASE_TYPE uxPriority, vtI
 	portBASE_TYPE retval;
 	NavData->dev = i2c;
 	NavData->lcdData = lcd;
+	NavData->mapData = MapData;
 	if ((retval = xTaskCreate( myNavUpdateTask, ( signed char * ) "Navigation", navSTACK_SIZE, (void *) NavData, uxPriority, ( xTaskHandle * ) NULL )) != pdPASS) {
 		VT_HANDLE_FATAL_ERROR(retval);
 	}
@@ -105,7 +106,6 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	vtI2CStruct *devPtr = param->dev;
 	// Get the LCD information pointer
 	vtLCDStruct *lcdData = param->lcdData;
-
 	myMapStruct *mapData = param->mapData;
 	// Get the sensor data
 	myNavMsg msgBuffer;
@@ -144,7 +144,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	uint8_t i2cRoverMoveRight2[] = {RoverMsgMotorRight2, 0x00};
 	uint8_t i2cRoverOnCorrection[] = {RoverMsgTurnOnWallTracking, 0x00};
 	uint8_t i2cRoverOffCorrection[] = {RoverMsgTurnOffWallTracking, 0x00};
-	uint8_t move5cm[] = {0x39, 0x00};
+
+	// WARNING UPGRADED TO 15CM
+	//uint8_t move5cm[] = {0x39, 0x00};
+	uint8_t move5cm[] = {0x3E, 0x00};
 
 	for(;;)
 	{
@@ -274,6 +277,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 							if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 								VT_HANDLE_FATAL_ERROR(0);
 							}
+							SendMapValueMsg(mapData,RoverMsgMotorRight90, Buffer, portMAX_DELAY);
 							if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveR90),i2cRoverMoveR90,10) != pdTRUE) {
 							printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 							VT_HANDLE_FATAL_ERROR(0);
@@ -293,10 +297,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 							}
 						}
 						else if( currentCommand == 4) {
-							SendMapValueMsg(mapData,RoverMsgMotorRight90, Buffer_map, portMAX_DELAY);
 							sprintf(str,"L%d",msgBuffer.buf[2]);
 							//sprintf(str,"testlol");
 			    			// Print something on LCD
+							SendMapValueMsg(mapData,RoverMsgMotorLeft90, Buffer, portMAX_DELAY);
 							if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 								VT_HANDLE_FATAL_ERROR(0);
 							}
@@ -306,7 +310,6 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 							}
 						}
 						else {
-						SendMapValueMsg(mapData,RoverMsgMotorLeft90, Buffer_map, portMAX_DELAY);
 						//do nothing
 						}
 						}

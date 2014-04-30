@@ -11,13 +11,13 @@
 <br><p>
 <h2>Team 1 mapping</h2>
 </font>
-<canvas id="myCanvas" width="500" height = "500" style = "border:1px solid #d3d3d3;">
+<canvas id="myCanvas" width="750" height = "750" style = "border:1px solid #d3d3d3;">
 Your browser does not support the HTML5 canvas tag.</canvas>
 <script>
 
 var c=document.getElementById("myCanvas");
 var ctx=c.getContext("2d");
-ctx.moveTo(0,0);
+ctx.moveTo(100,100);
 </script>
 <!--<canvas id="myCanvas" width="200" height = "100" style = "border:1px solid #d3d3d3;">
 Your browser does not support the HTML5 canvas tag.</canvas>
@@ -63,4 +63,87 @@ y.toString();
 </script> -->
 </body>
 </html>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script>
+		jQuery(document).ready(function($) {
+		$('body').keydown(function(evt) {
+		    switch(evt.keyCode) {
+		    	case 82: // R - run data collection
+		    		$.get("?run=4");
+		    		//start();
+		    		break;
+		    	case 83: // S - stop data collection
+		    		$.get("?run=5");
+		    		//stop();
+		    		break;
+
+		        case 37: // left
+		            $.get( "?run=3");
+		            break;
+
+		        case 38: // up
+		        	$.get( "?run=1");
+		            break;
+
+		        case 39: // right
+		       		$.get( "?run=2");
+		            break;
+				case 77: // M
+					$.get( "?run=55");
+					break;
+
+		        case 40: // down
+		        	if (evt.shiftKey) // shift + down == back up
+		        		$.get("?run=6");
+		        	else
+		        		$.get( "?run=0");
+		            break;
+
+	        	case 49: // down
+		        	if (evt.shiftKey) // shift + down == back up
+		        		$.get("?run=9");
+		        	else
+		        		$.get( "?run=10");
+		            break;
+
+	        	case 50: // downn
+		        	if (evt.shiftKey) // shift + down == back up
+		        		$.get("?run=7");
+		        	else
+		        		$.get( "?run=8");
+		            break;
+
+		        case 51: // down
+		        	if (evt.shiftKey) // shift + down == back up
+		        		$.get("?run=11");
+		        	else
+		        		$.get( "?run=12");
+		            break;
+
+		        case 90: // z
+		        	$.get( "?speed=0");
+		            break;
+
+		        case 88: // x
+		        	$.get( "?speed=1");
+		            break;
+
+	            case 67: // c
+		        	$.get( "?speed=2");
+		            break;
+
+	            case 86: // v
+		        	$.get( "?speed=3");
+		            break;
+
+		        case 66: // b
+		        	$.get( "?speed=4");
+		            break;
+		        case 87: // w
+		        	$.get( "?wall=0");
+		            break;
+		    };
+		});    
+    });
+</script>
 
