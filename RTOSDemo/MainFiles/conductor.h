@@ -14,6 +14,8 @@ typedef struct __ConductorStruct {
 	myMapStruct *mapData;
 } vtConductorStruct;
 
+extern int speedRun;
+
 unsigned char countDefArray[256];
 // Public API
 //

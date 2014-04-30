@@ -407,7 +407,7 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 						}		 */
 				if (motorDataFlag) {
 					if (timerExtender == 5) {
-						printf("MessageCount(Mtr): %d\n", getMsgCount());
+						//printf("MessageCount(Mtr): %d\n", getMsgCount());
 						i2cRoverMsgMotorLeftData[1] = getMsgCount();
 						insertCountDef(RoverMsgMotorLeftData);
 						if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x4F,sizeof(i2cRoverMsgMotorLeftData),i2cRoverMsgMotorLeftData,10) != pdTRUE) {
@@ -422,7 +422,7 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 						//	VT_HANDLE_FATAL_ERROR(0);
 						//}
 	
-						printf("MessageCount(sensor): %d\n", getMsgCount());
+						//printf("MessageCount(sensor): %d\n", getMsgCount());
 						i2cRoverSensorFullData[1] = getMsgCount();
 						insertCountDef(RoverMsgSensorAllData);
 						if (vtI2CEnQ(devPtr,roverI2CMsgTypeFullData,0x4F,sizeof(i2cRoverSensorFullData),i2cRoverSensorFullData,10) != pdTRUE) {

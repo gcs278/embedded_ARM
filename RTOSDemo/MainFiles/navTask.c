@@ -144,7 +144,10 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 	uint8_t i2cRoverMoveRight2[] = {RoverMsgMotorRight2, 0x00};
 	uint8_t i2cRoverOnCorrection[] = {RoverMsgTurnOnWallTracking, 0x00};
 	uint8_t i2cRoverOffCorrection[] = {RoverMsgTurnOffWallTracking, 0x00};
-	uint8_t move5cm[] = {0x39, 0x00};
+
+	// WARNING UPGRADED TO 15CM
+	//uint8_t move5cm[] = {0x39, 0x00};
+	uint8_t move5cm[] = {0x3E, 0x00};
 
 	for(;;)
 	{

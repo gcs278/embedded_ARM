@@ -40,13 +40,13 @@
 #define RoverMsgMotorRight5 0x26
 #define RoverMsgMotorRight7 0x27
 #define RoverMsgMotorRight10 0x28
-#define RoverMsgMotorRight15 0x29
 #define RoverMsgMotorRight90 0x2F
 
 #define RoverMsgTurnOnWallTracking 0x0E
 #define RoverMsgTurnOffWallTracking 0x0F
 
 // Speed Modes
+#define RoverMsgMotorSpeedNone 0x29
 #define RoverMsgMotorSpeedCreepin 0x2A
 #define RoverMsgMotorSpeedSlow 0x2B
 #define RoverMsgMotorSpeedMedium 0x2C
@@ -55,6 +55,6 @@
 
 #define RoverMsgMotorForwardCMDelim 0x30
 
-	int messageCount = 0;
+	int messageCount = 0;	   
 
 #endif
