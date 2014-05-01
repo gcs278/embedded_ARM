@@ -324,21 +324,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 			GPIO_ClearValue(0,0x78000);
 			GPIO_SetValue(0, 0x50000);
 
-			if(mapStruct.SEMForSensors != NULL)
-			{
-				if( xSemaphoreTake( mapStruct.SEMForSensors , 1 ) == pdPASS ) {
-					mapStruct.sensor1 = msgBuffer.buf[2];
-					mapStruct.sensor2 = msgBuffer.buf[3];
-					mapStruct.sensor3 = msgBuffer.buf[4];
-					mapStruct.sensor4 = msgBuffer.buf[5];
-					printf("take\n");
-						if(	xSemaphoreGive( mapStruct.SEMForSensors ) == pdFALSE )
-						{
-							printf("YOU DONE FUCKED UP A-AARON");
-						}
-					}
-					printf("Give\n");
-			}
+			
 
 			extender--;
 			if ( extender < 0 ) {
@@ -347,6 +333,21 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 				//do nothing because this is all based on tick data now
 				}
 				else if (msgBuffer.buf[1] > 3  && msgBuffer.buf[1] < 60) {
+					if(mapStruct.SEMForSensors != NULL)
+					{
+						if( xSemaphoreTake( mapStruct.SEMForSensors , 1 ) == pdPASS ) {
+							mapStruct.sensor1 = msgBuffer.buf[2];
+							mapStruct.sensor2 = msgBuffer.buf[3];
+							mapStruct.sensor3 = msgBuffer.buf[4];
+							mapStruct.sensor4 = msgBuffer.buf[5];
+							printf("take\n");
+							if(	xSemaphoreGive( mapStruct.SEMForSensors ) == pdFALSE )
+							{
+								printf("YOU DONE FUCKED UP A-AARON");
+							}
+						}
+						printf("Give\n");
+					}
 					currentCommand = myCommandRover(msgBuffer.buf[3], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
 					if( currentCommand == 12) {
 						if( lastsidedata > lastsidedata2) {

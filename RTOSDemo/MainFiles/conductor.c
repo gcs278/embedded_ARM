@@ -73,6 +73,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	myMapStruct *mapData = param->mapData;
 	uint8_t recvMsgType;
 	mapStruct.mappingFlag = 0;
+	uint8_t i2cRoverMoveStop[] = {0x05, 0x00};
 
 	// 255 will always be a bad message
 	countDefArray[255] = BadMsg;
@@ -140,6 +141,12 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			SendMapValueMsg(mapData,0x11,Buffer,portMAX_DELAY);
 			break;
 			}
+		}
+		if(Buffer[6] == 1) {
+			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveStop),i2cRoverMoveStop,10) != pdTRUE) {
+				VT_HANDLE_FATAL_ERROR(0);
+			}
+			stopGettingMotor("DATASTOP");
 		}
 		}
 		// Clear the count defition
