@@ -146,10 +146,13 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveStop),i2cRoverMoveStop,10) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
 			}
+			mapStruct.mappingFlag = 0;
+			restart_nav();
+			printf("\nFINISH LINE DETECTED!\n");
 			stopGettingMotor("DATASTOP");
 		}
 		}
-		// Clear the count defition
+		// Clear the count defition					  
 		countDefArray[Buffer[0]] = CleanMsg;
 
 		// Check if retransmission is needed

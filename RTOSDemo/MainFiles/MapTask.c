@@ -116,12 +116,19 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 	// This is the mapping process for loop. When this is broken, it goes to the speed run.
 	
 	
+	mapStruct.mappingFlag = 0;
 	for(;;)
 	{
 		printf("Saw Left: %d\n", saw_left);
 		printf("Saw Right: %d\n", saw_right);
 		for (k = 0; k < num_walls; k++)
 			printf("wall#: %d, orientation: %d, length: %d\n", k, mapping_walls[k].direction, mapping_walls[k].length);
+
+		if (mapStruct.mappingFlag == 1)
+		{
+			printf("Done with mapping!\n");
+			break;
+		}
 
 		// Wait for a message from conductor
 		if (xQueueReceive(param->inQ,(void *) &msgBuffer,portMAX_DELAY) != pdTRUE) {
@@ -136,22 +143,25 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 			
 			printf("MotorMessageMap:%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",msgBuffer.buf[0],msgBuffer.buf[1],msgBuffer.buf[2],msgBuffer.buf[3],msgBuffer.buf[4],msgBuffer.buf[5],msgBuffer.buf[6],msgBuffer.buf[7],msgBuffer.buf[8],msgBuffer.buf[9]);
 			// Update the length that the rover has traveled.
-			// local_len = local_len + msgBuffer.buf[2];
-			mapping_walls[num_walls - 1].length += msgBuffer.buf[2]/6;
+			if (msgBuffer.buf[1] > 1)
+				mapping_walls[num_walls - 1].length += msgBuffer.buf[2]/6;
+		
 			static int i = 0;
-			if (i++ >= 10)
+			if (++i >= 10)
 			{
 				i = 0;		
 				update_walls(mapping_walls, num_walls);
 			}
 			else
-				i++;				
+				++i;				
 										  
 			break;
 		}
 		case RoverMsgMotorRight90:
 		{
-			num_walls++;
+			// Sometimes right turns are resent. In this case the wall will be short. Overwrite the wall.
+			if (mapping_walls[num_walls-1].length > 10)
+				num_walls++;
 			int new_dir = mapping_walls[num_walls-2].direction - 90;
 			mapping_walls[num_walls-1].direction = (new_dir != -90) ? new_dir :	270;
 			mapping_walls[num_walls-1].length = 0;
@@ -160,8 +170,10 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 			break;
 		}
 		case RoverMsgMotorLeft90:
-		{
-			num_walls++;
+		{			
+			// Sometimes left turns need to be resent. If they are, then they will have short length.				
+			if (mapping_walls[num_walls-1].length > 10)
+				num_walls++;
 			int new_dir = mapping_walls[num_walls-2].direction + 90;
 			mapping_walls[num_walls-1].direction = (new_dir != 360) ? new_dir :	0;
 			mapping_walls[num_walls-1].length = 0;
@@ -177,21 +189,28 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 		}
 	}
 	  
-
-	// Adjust the walls to meet each other for the speed run.
-			   
-	//speedRun = 1;
-
-	// TEMPORARY CREATION OF A MAP.
+	// TEST MAP.
+	/*
 	mapping_walls[0].length = 300;
-	mapping_walls[1].length = 150;
-	mapping_walls[2].length = 300;
-	mapping_walls[3].length = 150;
+	mapping_walls[1].length = 120;
+	mapping_walls[2].length = 120;
+	mapping_walls[3].length = 35;
+	mapping_walls[4].length = 60;
+	mapping_walls[5].length = 35;
+	mapping_walls[6].length = 120;
+	mapping_walls[7].length = 120;
 	mapping_walls[0].direction = 270;
 	mapping_walls[1].direction = 0;
 	mapping_walls[2].direction = 90;
 	mapping_walls[3].direction = 180;
-	num_walls = 4;
+	mapping_walls[4].direction = 90;
+	mapping_walls[5].direction = 0;
+	mapping_walls[6].direction = 90;
+	mapping_walls[7].direction = 180;
+	num_walls = 8;
+	*/
+
+	// Push the new walls to the webserver.
 	update_walls(mapping_walls, num_walls);
 
 	uint8_t i2cRoverStop[] = {0x05, 0x00};
@@ -211,6 +230,7 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 	uint8_t i2cRoverSpeedMediumFast[] = {RoverMsgMotorSpeedMediumFast, 0x00};
 	uint8_t i2cRoverSpeedFastBRAH[] = {RoverMsgMotorSpeedFastBRAH, 0x00};
 
+	int disable_for_nav = 0;
 	int cur_wall = 0;
 	int rem_len = mapping_walls[cur_wall].length;
 	int cur_speed = RoverMsgMotorSpeedNone;
@@ -222,12 +242,21 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 		if (xQueueReceive(param->inQ,(void *) &msgBuffer,portMAX_DELAY) != pdTRUE) {
 			VT_HANDLE_FATAL_ERROR(0);
 		}
-		//printf("Received message in SpeedRun!\n");
-		
+
+		if (mapStruct.mappingFlag == 0)
+		{
+			disable_for_nav = 0;
+			cur_wall = 0;
+			rem_len = mapping_walls[cur_wall].length;
+			cur_speed = RoverMsgMotorSpeedNone;
+			continue;
+		}
 
 		// After the first message, Set the rover to medium speed and tell it to go.
 		if (initial)
 		{
+			if (disable_for_nav == 0)
+			{
 			initial = 0;
 			printf("Medium Speed Start!\n");
 			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedMedium),i2cRoverSpeedMedium,10) != pdTRUE) {
@@ -238,9 +267,22 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
 			}
+			}
 		}
 
-		switch(getMsgType(&msgBuffer)) {
+		switch(getMsgType(&msgBuffer)) {	
+		case RoverMsgMotorForward:
+		{
+			printf("Disabling Speed Changing\n");
+			disable_for_nav = 0;
+			break;
+		}
+		case RoverMsgMotorStop:
+		{		
+			printf("Enabling Speed Changing\n");			  
+			disable_for_nav = 1;
+			break;
+		}
 		case RoverMsgSensorAllData:
 		{
 			int cur_wall = 0;
@@ -248,22 +290,35 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 			break;
 		}
 		case RoverMsgMotorRight90:
-		{
-			int cur_wall = cur_wall + 1;
-			int rem_len = mapping_walls[cur_wall].length;
+		{				   
+			printf("Making right turn!\n");
+			cur_wall = cur_wall + 1;
+			rem_len = mapping_walls[cur_wall].length;
+			printf("New length: %d\n", mapping_walls[cur_wall].length);
+			int k;
+			//for (k = 0; k < num_walls; k++)
+				//printf("wall#: %d, orientation: %d, length: %d\n", k, mapping_walls[k].direction, mapping_walls[k].length);
+
 			break;
 		}
 		case RoverMsgMotorLeft90:
 		{
+			printf("Making left turn!\n");
+			cur_wall = cur_wall + 1;
+			rem_len = mapping_walls[cur_wall].length;
+			printf("New length: %d\n", mapping_walls[cur_wall].length);
+			int k;
+			//for (k = 0; k < num_walls; k++)
+				//printf("wall#: %d, orientation: %d, length: %d\n", k, mapping_walls[k].direction, mapping_walls[k].length);
+
 			break;
 		}
 		case RoverMsgMotorLeftData:
 		{	
 			int traveled = msgBuffer.buf[2] / 6;
 			
-			
 			// If the rover is stopped, tell it to go!
-			if (traveled <= 1) {
+			if (traveled <= 1 && disable_for_nav == 0) {
 				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
 						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
 						VT_HANDLE_FATAL_ERROR(0);
@@ -272,60 +327,57 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 
 			if (traveled >= 15)
 				cur_speed =  i2cRoverSpeedFastBRAH;
-			else if (traveled < 15 &&  traveled >= 7)
+			else if (traveled < 15 &&  traveled >= 6)
 				cur_speed = i2cRoverSpeedMediumFast;
-			else if (traveled < 7)
+			else if (traveled < 6)
 				cur_speed = i2cRoverSpeedMedium;
 			 
 			// Adjust the speed of the rover based on distance to the next wall.
 			rem_len -= traveled;
 			printf("Remaining Length: %d\n", rem_len);
-			if (rem_len > 200 && cur_speed != i2cRoverSpeedFastBRAH)
+			if (disable_for_nav == 0)
 			{
-				printf("Setting current speed: FastBRAH\n");
-				//cur_speed = RoverMsgMotorSpeedFastBRAH;
-				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedFastBRAH),i2cRoverSpeedFastBRAH,10) != pdTRUE) {
-					VT_HANDLE_FATAL_ERROR(0);
+				if (rem_len > 75 && cur_speed != i2cRoverSpeedFastBRAH)
+				{
+					printf("Setting current speed: FastBRAH\n");
+					//cur_speed = RoverMsgMotorSpeedFastBRAH;
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedFastBRAH),i2cRoverSpeedFastBRAH,10) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					}
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
+						printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
+						VT_HANDLE_FATAL_ERROR(0);
+					}
 				}
-				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
-					printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
-					VT_HANDLE_FATAL_ERROR(0);
+				else if (rem_len < 75 && rem_len > 20 && cur_speed != i2cRoverSpeedMediumFast)
+				{
+					printf("Setting current speed: MediumFast\n");
+					//cur_speed = RoverMsgMotorSpeedMedium;
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedMediumFast),i2cRoverSpeedMediumFast,10) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					}
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedMediumFast),i2cRoverSpeedMediumFast,10) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					}
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					}
+				}
+				else if (rem_len < 20 && cur_speed != i2cRoverSpeedMedium)
+				{
+					printf("Setting current speed: Medium\n");
+					//cur_speed = RoverMsgMotorSpeedSlow;
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedMedium),i2cRoverSpeedMedium,10) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					}
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedMedium),i2cRoverSpeedMedium,10) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					}
+					if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
+						VT_HANDLE_FATAL_ERROR(0);
+					}
 				}
 			}
-			else if (rem_len < 200 && rem_len > 100 && cur_speed != i2cRoverSpeedMediumFast)
-			{
-				printf("Setting current speed: MediumFast\n");
-				//cur_speed = RoverMsgMotorSpeedMedium;
-				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedMediumFast),i2cRoverSpeedMediumFast,10) != pdTRUE) {
-					VT_HANDLE_FATAL_ERROR(0);
-				}
-				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedMediumFast),i2cRoverSpeedMediumFast,10) != pdTRUE) {
-					VT_HANDLE_FATAL_ERROR(0);
-				}
-				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
-					printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
-					VT_HANDLE_FATAL_ERROR(0);
-				}
-			}
-			else if (rem_len < 100 && cur_speed != i2cRoverSpeedMedium)
-			{
-				printf("Setting current speed: Medium\n");
-				//cur_speed = RoverMsgMotorSpeedSlow;
-				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedMedium),i2cRoverSpeedMedium,10) != pdTRUE) {
-					VT_HANDLE_FATAL_ERROR(0);
-				}
-				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverSpeedMedium),i2cRoverSpeedMedium,10) != pdTRUE) {
-					VT_HANDLE_FATAL_ERROR(0);
-				}
-				if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveForward),i2cRoverMoveForward,10) != pdTRUE) {
-					printf("GODDAMNIT MOTHER FUCKING PIECE OF SHIT");
-					VT_HANDLE_FATAL_ERROR(0);
-				}
-			}
-			else
-			{
-			}
-			break;
 		}
 		}
 	}
