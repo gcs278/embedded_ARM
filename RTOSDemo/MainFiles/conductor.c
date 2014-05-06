@@ -17,7 +17,6 @@
 #include "conductor.h"
 #include "mywebmap.h"
 #include "navtask.h"
-#include "maptask.h"
 #include "LPC17XX.h"
 #include "lpc17xx_gpio.h"
 
@@ -36,11 +35,6 @@
 // end of defs
 /* *********************************************** */
 
-/*struct myMapWebs {
-	//int myMapArray[30][30];
-	//char *myOutputSting;
-	int testStruct;
-};	*/
 /* The i2cTemp task. */
 static portTASK_FUNCTION_PROTO( vConductorUpdateTask, pvParameters );
 
@@ -63,6 +57,7 @@ void vStartConductorTask(vtConductorStruct *params,unsigned portBASE_TYPE uxPrio
 /*-----------------------------------------------------------*/
 
 // This is the actual task that is run
+int speedRun = 0;
 static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 {
 	uint8_t rxLen, status;
@@ -78,6 +73,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	myMapStruct *mapData = param->mapData;
 	uint8_t recvMsgType;
 	mapStruct.mappingFlag = 0;
+	uint8_t i2cRoverMoveStop[] = {0x05, 0x00};
 
 	// 255 will always be a bad message
 	countDefArray[255] = BadMsg;
@@ -87,36 +83,10 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 	}
 	uint8_t i2cRoverMoveStop[] = {0x05, 0x00};
 	// Like all good tasks, this should never exit
+	
 	for(;;)
 	{
-		//mapStruct.testStruct = 646; 
-		/*int array[10][10]={{1,1,1,1,1,1,1,1,1,1},
-			{1,0,0,0,0,0,0,0,0,1},
-			{1,0,0,0,0,0,0,0,0,1},
-			{1,0,0,0,0,0,1,1,1,1},
-			{1,0,0,0,0,0,1,0,0,0},
-			{1,0,0,0,0,0,1,1,1,1},
-			{1,0,0,0,0,0,0,0,0,1},
-			{1,1,1,1,0,0,0,0,0,0,0,1},
-			{0,0,0,1,0,0,0,0,1,1,1,1},
-			{0,0,0,1,1,1,1,1,1,0,0,0}};		   */
-			/*int hi =0;
-			int hj=0;
-			for (hi=0; hi<10 ; hi++) {
-				for ( hj=0; hj<10; hj++){
-					//if(array[hi][hj]==1){
-					if(hi==0 ||hi == 9){
-				  		mapStruct.myMapArray[hi][hj]=1;
-						}
-					else if( hj==0 || hj==9) {
-						mapStruct.myMapArray[hi][hj]=1;
-					} 
-					else {
-						mapStruct.myMapArray[hi][hj]=0;
-					}
-					//}
-				}
-			} */
+		
 		// Wait for a message from an I2C operation
 		if (vtI2CDeQ(devPtr,vtI2CMLen,Buffer,&rxLen,&recvMsgType,&status) != pdTRUE) {
 			VT_HANDLE_FATAL_ERROR(0);
@@ -126,7 +96,6 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 		//   This just shows going to one task/queue, but you could easily send to
 		//   other Q/tasks for other message types
 		// This isn't a state machine, it is just acting as a router for messages
-		//printf("New Message: %d\n",Buffer[0]);
 		
 		// If it is the initialization message
 		if ( recvMsgType == vtI2CMsgTypeTempInit ) {
@@ -141,7 +110,8 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				GPIO_ClearValue(0,0x78000);
 				GPIO_SetValue(0, 0x48000);
 				SendMapValueMsg(mapData,RoverMsgSensorAllData, Buffer, portMAX_DELAY);
-				SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
+				if (!speedRun)
+					SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
 				break;
 			}
 			case RoverMsgSensorForwardRight: {
@@ -152,8 +122,9 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				//printf("MotorLeftData\n");
 				GPIO_ClearValue(0,0x78000);
 				GPIO_SetValue(0, 0x40000);
-				//SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
-				SendNavValueMsg(navData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
+				SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
+				if (!speedRun)
+					SendNavValueMsg(navData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				SendMapValueMsg(mapData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				break;
 			}
@@ -167,52 +138,24 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				printf("Bad Message; Restart Pics\n");
 				break;
 			}
-		/*case vtI2CMsgTypeTempRead1: {
-				printf("1");
-			SendTempValueMsg(tempData,recvMsgType,(Buffer),portMAX_DELAY);
-				printf("4");
-			break;
-		}
-		case vtI2CMsgTypeTempRead2: {
-	//		SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
-			break;
-		}
-		case vtI2CMsgTypeTempRead3: {
-	//		SendTempValueMsg(tempData,recvMsgType,(*valPtr),portMAX_DELAY);
-			break;
-		}
-		// When we receive data from rover
-		case roverI2CMsgTypeFullData: {
-			SendNavValueMsg(navData,recvMsgType,Buffer,portMAX_DELAY);
-			break;
-		}		*/
 		default: {
-			printf("ConductDefault\n");
-			//printf("Snding this to the nav\n");
-			//SendNavValueMsg(navData,0x11,Buffer,portMAX_DELAY);
+			//printf("ConductDefault\n");
 			SendMapValueMsg(mapData,0x11,Buffer,portMAX_DELAY);
-			//SendTempValueMsg(tempData,recvMsgType,Buffer,portMAX_DELAY);
-			/*switch(recvMsgType) {
-				case vtI2CMsgTypeTempRead1: {
-					SendTempValueMsg(tempData,recvMsgType,(Buffer),portMAX_DELAY);
-				break;
-				}
-				default: {
-				break;
-				}
-			} */
-			//VT_HANDLE_FATAL_ERROR(recvMsgType);
 			break;
 			}
 		}
-		/*if(Buffer[6] == 1) {
+		if(Buffer[6] == 1) {
 			if (vtI2CEnQ(devPtr,vtI2CMsgTypeTempRead1,0x4F,sizeof(i2cRoverMoveStop),i2cRoverMoveStop,10) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
 			}
+			mapStruct.mappingFlag = 0;
+			mapStruct.timerFlag = 0;
+			restart_nav();
+			printf("\nFINISH LINE DETECTED!\n");
 			stopGettingMotor("DATASTOP");
-		} */
 		}
-		// Clear the count defition
+		}
+		// Clear the count defition					  
 		countDefArray[Buffer[0]] = CleanMsg;
 
 		// Check if retransmission is needed

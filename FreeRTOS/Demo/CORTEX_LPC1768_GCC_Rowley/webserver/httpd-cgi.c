@@ -411,18 +411,45 @@ static PT_THREAD(led_io(struct httpd_state *s, char *ptr))
 }
 /*---------------------------------------------------------------------------*/
 extern void vTaskGetMapWebString( char *pcWriteBuffer);
+static char myvarBuf[100];
 static unsigned	short
 generate_map_stats(void *arg)
 {
-	( void ) arg;
-	//strcat(uip_appdata," <canvas id=\"myCanvas\" width=\"200\" height = \"100\" style = \"border:1px solid #d3d3d3;\">Your browser does not support the HTML5 canvas tag.</canvas><script>var c=document.getElementById(\"myCanvas\");var ctx=c.getContext(\"2d\");");
-	//char outputMap[1200]=" <canvas id=\"myCanvas\" width=\"200\" height = \"100\" style = \"border:1px solid #d3d3d3;\">Your browser does not support the HTML5 canvas tag.</canvas><script>var c=document.getElementById(\"myCanvas\");var ctx=c.getContext(\"2d\");var map =[[1,1,1,1,1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,1,1,1,1],[1,0,0,0,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,0,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,0,0,0,0,0,0,0,1],[0,0,0,1,0,0,0,0,1,1,1,1],[1,1,1,1,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,0,1,0,0,0],[1,0,0,0,0,0,0,0,1,1,1,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,0,0,0,0,0,0,0,0,0,0,1],[1,1,1,1,1,1,1,1,1,1,1,1]];for ( var i=0; i<15 ; i++) {for ( var j=0; j<12; j++){if (map[i][j] == 1) {ctx.fillRect(j,i,1,1);}}}</script>";
-	//sprintf(uip_appdata,outputMap);
-	//char *ouputMap[2000]="";
-	vTaskGetMapWebString( uip_appdata);
-	//strcat(uip_appdata, outputMap);
-	//strcat(uip_appdata,"</script>"); 
+
+	//( void ) arg;
+	
+	// Currently starts at 100
+	int xAxis = 100;
+	int yAxis = 100;
+	//int size=8;
+		
+	sprintf(uip_appdata, "<script>");
+
+	int i =0;
+	for(i = 0 ; i<num_walls; i++) {
+		if (web_walls[i].direction == 270)
+			xAxis = xAxis + web_walls[i].length;
+		else if (web_walls[i].direction == 90)
+			xAxis = xAxis - web_walls[i].length;
+		else if (web_walls[i].direction == 0)
+			yAxis = yAxis + web_walls[i].length;
+		else if (web_walls[i].direction == 180)
+			yAxis = yAxis - web_walls[i].length;
+
+		strcat(uip_appdata, "ctx.lineTo(");
+		sprintf(myvarBuf, "%d",  yAxis);
+		printf( "y%d\n",  yAxis);
+		strcat(uip_appdata, myvarBuf);
+		strcat(uip_appdata, ",");
+		sprintf(myvarBuf, "%d",  xAxis);
+		printf("x%d\n",  xAxis);
+		strcat(uip_appdata, myvarBuf);
+		strcat(uip_appdata, ");");
+	}
+
+	strcat(uip_appdata, "</script>");
 	return strlen( uip_appdata );
+	
 }
 static
 PT_THREAD(map_stats(struct httpd_state *s, char *ptr))

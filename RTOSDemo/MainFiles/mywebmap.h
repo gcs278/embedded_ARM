@@ -47,10 +47,11 @@ void update_walls(wall map_walls[50], int map_num)
 {
 	int i;
 	for (i = 0; i < map_num; i++)
+	{
 		web_walls[i] = map_walls[i];
-
-	// This way the web task will never read too far
+	}
 	num_walls = map_num;
 }
+
 
 #endif
