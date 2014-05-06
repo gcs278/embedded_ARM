@@ -297,6 +297,10 @@ extern void vParTestSetLEDState( long lState );
 		}
 		else if (!strcmp( c, "?run=4" ) ) {
 			mapStruct.timerFlag =1;
+			mapStruct.deciSeconds = 0;
+			mapStruct.seconds = 0;
+			mapStruct.min = 0;
+			mapStruct.totalDistanceTraveled = 0;
 			startGettingMotor("DATASTART");
 		}
 		else if ( !strcmp( c, "?run=5" ) ) {
@@ -330,6 +334,10 @@ extern void vParTestSetLEDState( long lState );
 		else if ( !strcmp( c, "?run=55" )) {
 			mapStruct.mappingFlag = 1;	
 			mapStruct.timerFlag =1;
+			mapStruct.deciSeconds = 0;
+			mapStruct.seconds = 0;
+			mapStruct.min = 0;
+			mapStruct.totalDistanceTraveled = 0;
 			startGettingMotor("DATASTART");	   	
 		}
 		else if ( !strcmp( c, "?run=10" )) {

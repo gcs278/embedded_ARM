@@ -393,9 +393,9 @@ static portTASK_FUNCTION( vi2cTempUpdateTask, pvParameters )
 			sprintf(str,"%d,%dms%dcm%dc/s",msgBuffer.buf[0],time,distance,cmPerSec);
 			//sprintf(str,"testlol");
 		    // Print something on LCD
-			if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
+			/*if (SendLCDPrintMsg(lcdData,strnlen(str,vtLCDMaxLen),str,portMAX_DELAY) != pdTRUE) {
 				VT_HANDLE_FATAL_ERROR(0);
-			}	
+			}*/	
 			
 			 break;
 		}

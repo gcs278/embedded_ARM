@@ -166,7 +166,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 
 	// WARNING UPGRADED TO 1CM
 	//uint8_t move1cm[] = {0x39, 0x00};
-	uint8_t move1cm[] = {0x30, 0x00};
+	uint8_t move1cm[] = {0x33, 0x00};
 
 	for(;;)
 	{
@@ -352,21 +352,7 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 			GPIO_ClearValue(0,0x78000);
 			GPIO_SetValue(0, 0x50000);
 
-			if(mapStruct.SEMForSensors != NULL)
-			{
-				if( xSemaphoreTake( mapStruct.SEMForSensors , 1 ) == pdPASS ) {
-					mapStruct.sensor1 = msgBuffer.buf[2];
-					mapStruct.sensor2 = msgBuffer.buf[3];
-					mapStruct.sensor3 = msgBuffer.buf[4];
-					mapStruct.sensor4 = msgBuffer.buf[5];
-					//printf("take\n");
-						if(	xSemaphoreGive( mapStruct.SEMForSensors ) == pdFALSE )
-						{
-							printf("YOU DONE FUCKED UP A-AARON");
-						}
-					}
-					//printf("Give\n");
-			}
+			
 
 			extender--;
 			if ( extender < 0 ) {
@@ -376,6 +362,21 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 				}
 				else if (msgBuffer.buf[1] > 3  && msgBuffer.buf[1] < 60) {
 					currentCommand = myCommandRover(msgBuffer.buf[3], msgBuffer.buf[3] ,msgBuffer.buf[4], msgBuffer.buf[5], currentCommand, 55, 1);
+					if(mapStruct.SEMForSensors != NULL)
+					{
+						if( xSemaphoreTake( mapStruct.SEMForSensors , 1 ) == pdPASS ) {
+							mapStruct.sensor1 = msgBuffer.buf[2];
+							mapStruct.sensor2 = msgBuffer.buf[3];
+							mapStruct.sensor3 = msgBuffer.buf[4];
+							mapStruct.sensor4 = msgBuffer.buf[5];
+							//printf("take\n");
+							if(	xSemaphoreGive( mapStruct.SEMForSensors ) == pdFALSE )
+							{
+								printf("YOU DONE FUCKED UP A-AARON");
+							}
+						}
+						//printf("Give\n");
+					}
 					if( currentCommand == 12) {
 						if( lastsidedata > lastsidedata2) {
 							percentError = msgBuffer.buf[4] - lastsidedata2;
@@ -406,8 +407,8 @@ static portTASK_FUNCTION( myNavUpdateTask, pvParameters) {
 						lastsidedata = msgBuffer.buf[4];
 					} 
 					else {
-						lastsidedata = 255;
-						lastsidedata2 = 255;
+						lastsidedata = 200;
+						lastsidedata2 = 200;
 						percentError = 0;
 					}
 
@@ -599,7 +600,7 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 			return 2;//buffer
 		}
 		//off
-		else if(lastCommand == 2 && avgFront <= 70 && avgFront >= 1 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02) {
+		else if(lastCommand == 2 && avgFront <= 85 && avgFront >= 1 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02) {
 			return 3;
 		}
 		//off
@@ -619,7 +620,7 @@ uint8_t myCommandRover( uint8_t frontRight, uint8_t frontLeft, uint8_t sideFront
 			return 7;
 		}
 		//on
-		else if (lastCommand == 7 && avgFront <= 70 && avgFront >= 1 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02) {
+		else if (lastCommand == 7 && avgFront <= 85 && avgFront >= 1 && data == 1 && percentErrorFront <= .02 && percentErrorFront >= -.02) {
 			return 3;
 		}
 		//off

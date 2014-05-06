@@ -349,7 +349,7 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 						VT_HANDLE_FATAL_ERROR(0);
 					}
 				}
-				else if (rem_len < 75 && rem_len > 20 && cur_speed != i2cRoverSpeedMediumFast)
+				else if (rem_len < 75 && rem_len > 30 && cur_speed != i2cRoverSpeedMediumFast)
 				{
 					printf("Setting current speed: MediumFast\n");
 					//cur_speed = RoverMsgMotorSpeedMedium;
@@ -363,7 +363,7 @@ static portTASK_FUNCTION( myMapUpdateTask, pvParameters) {
 						VT_HANDLE_FATAL_ERROR(0);
 					}
 				}
-				else if (rem_len < 20 && cur_speed != i2cRoverSpeedMedium)
+				else if (rem_len < 30 && cur_speed != i2cRoverSpeedMedium)
 				{
 					printf("Setting current speed: Medium\n");
 					//cur_speed = RoverMsgMotorSpeedSlow;

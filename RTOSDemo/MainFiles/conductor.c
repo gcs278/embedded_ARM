@@ -120,7 +120,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				//printf("MotorLeftData\n");
 				GPIO_ClearValue(0,0x78000);
 				GPIO_SetValue(0, 0x40000);
-				//SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
+				SendTempValueMsg(tempData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				if (!speedRun)
 					SendNavValueMsg(navData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
 				SendMapValueMsg(mapData,RoverMsgMotorLeftData,Buffer,portMAX_DELAY);
@@ -147,6 +147,7 @@ static portTASK_FUNCTION( vConductorUpdateTask, pvParameters )
 				VT_HANDLE_FATAL_ERROR(0);
 			}
 			mapStruct.mappingFlag = 0;
+			mapStruct.timerFlag = 0;
 			restart_nav();
 			printf("\nFINISH LINE DETECTED!\n");
 			stopGettingMotor("DATASTOP");
